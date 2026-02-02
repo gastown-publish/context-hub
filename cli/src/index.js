@@ -8,6 +8,7 @@ import { registerUpdateCommand } from './commands/update.js';
 import { registerCacheCommand } from './commands/cache.js';
 import { registerSearchCommand } from './commands/search.js';
 import { registerGetCommand } from './commands/get.js';
+import { registerBuildCommand } from './commands/build.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const pkg = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), 'utf8'));
@@ -36,6 +37,7 @@ ${chalk.bold.underline('Commands')}
   ${chalk.bold('get skills')} <ids...>         Fetch skill content
   ${chalk.bold('update')}                      Refresh the cached registry
   ${chalk.bold('cache')} status|clear          Manage the local cache
+  ${chalk.bold('build')} <content-dir>        Build registry from content directory
 
 ${chalk.bold.underline('Flags')}
 
@@ -81,7 +83,7 @@ program
   });
 
 // Commands that don't need registry
-const SKIP_REGISTRY = ['update', 'cache', 'help'];
+const SKIP_REGISTRY = ['update', 'cache', 'build', 'help'];
 
 program.hook('preAction', async (thisCommand) => {
   const cmdName = thisCommand.args?.[0] || thisCommand.name();
@@ -102,5 +104,6 @@ registerUpdateCommand(program);
 registerCacheCommand(program);
 registerSearchCommand(program);
 registerGetCommand(program);
+registerBuildCommand(program);
 
 program.parse();

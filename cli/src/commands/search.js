@@ -9,13 +9,14 @@ function formatEntryList(entries) {
     const id = getDisplayId(entry);
     const source = entry.source ? chalk.dim(`[${entry.source}]`) : '';
     const sourceName = multi ? chalk.cyan(`(${entry._source})`) : '';
+    const type = entry._type === 'skill' ? chalk.magenta('[skill]') : chalk.blue('[doc]');
     const langs = (entry.languages || []).map((l) => displayLanguage(l.language)).join(', ');
     const desc = entry.description
       ? entry.description.length > 60
         ? entry.description.slice(0, 57) + '...'
         : entry.description
       : '';
-    console.log(`  ${chalk.bold(id)}  ${chalk.dim(langs)}  ${source} ${sourceName}`.trimEnd());
+    console.log(`  ${chalk.bold(id)}  ${type}  ${chalk.dim(langs)}  ${source} ${sourceName}`.trimEnd());
     if (desc) console.log(`       ${chalk.dim(desc)}`);
   }
 }
@@ -27,13 +28,21 @@ function formatEntryDetail(entry) {
   if (entry.description) console.log(`  ${chalk.dim(entry.description)}`);
   if (entry.tags?.length) console.log(`  Tags: ${entry.tags.join(', ')}`);
   console.log();
-  for (const lang of entry.languages || []) {
-    console.log(`  ${chalk.bold(displayLanguage(lang.language))}`);
-    console.log(`    Recommended: ${lang.recommendedVersion}`);
-    for (const v of lang.versions || []) {
-      const size = v.size ? ` (${(v.size / 1024).toFixed(1)} KB)` : '';
-      console.log(`    ${v.version}${size}  updated: ${v.lastUpdated}`);
+  if (entry.languages) {
+    for (const lang of entry.languages) {
+      console.log(`  ${chalk.bold(displayLanguage(lang.language))}`);
+      console.log(`    Recommended: ${lang.recommendedVersion}`);
+      for (const v of lang.versions || []) {
+        const size = v.size ? ` (${(v.size / 1024).toFixed(1)} KB)` : '';
+        console.log(`    ${v.version}${size}  updated: ${v.lastUpdated}`);
+      }
     }
+  } else {
+    // Skill — flat structure
+    const size = entry.size ? ` (${(entry.size / 1024).toFixed(1)} KB)` : '';
+    console.log(`  Path: ${entry.path}${size}`);
+    if (entry.lastUpdated) console.log(`  Updated: ${entry.lastUpdated}`);
+    if (entry.files?.length) console.log(`  Files: ${entry.files.join(', ')}`);
   }
 }
 

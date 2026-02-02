@@ -6,25 +6,60 @@ let _merged = null;
 
 /**
  * Load and merge entries from all configured sources.
- * Each entry gets tagged with `_source` (source name).
+ * Returns { docs: [...], skills: [...] } with each entry tagged with _source/_sourceObj.
  */
-function getMergedEntries() {
+function getMerged() {
   if (_merged) return _merged;
 
   const config = loadConfig();
-  const allEntries = [];
+  const allDocs = [];
+  const allSkills = [];
 
   for (const source of config.sources) {
     const registry = loadSourceRegistry(source);
-    if (!registry?.entries) continue;
+    if (!registry) continue;
 
-    for (const entry of registry.entries) {
-      allEntries.push({ ...entry, _source: source.name, _sourceObj: source });
+    // Support both new format (docs/skills) and old format (entries)
+    if (registry.docs) {
+      for (const doc of registry.docs) {
+        allDocs.push({ ...doc, id: doc.name, _source: source.name, _sourceObj: source });
+      }
+    }
+    if (registry.skills) {
+      for (const skill of registry.skills) {
+        allSkills.push({ ...skill, id: skill.name, _source: source.name, _sourceObj: source });
+      }
+    }
+
+    // Backward compat: old entries[] format
+    if (registry.entries) {
+      for (const entry of registry.entries) {
+        const tagged = { ...entry, _source: source.name, _sourceObj: source };
+        const provides = entry.languages?.[0]?.versions?.[0]?.provides || [];
+        if (provides.includes('skill')) {
+          allSkills.push(tagged);
+        }
+        if (provides.includes('doc') || provides.length === 0) {
+          allDocs.push(tagged);
+        }
+      }
     }
   }
 
-  _merged = allEntries;
+  _merged = { docs: allDocs, skills: allSkills };
   return _merged;
+}
+
+/**
+ * Get all entries (docs + skills combined) for listing/searching.
+ */
+function getAllEntries() {
+  const { docs, skills } = getMerged();
+  // Tag each with _type for display
+  const taggedDocs = docs.map((d) => ({ ...d, _type: 'doc' }));
+  const taggedSkills = skills.map((s) => ({ ...s, _type: 'skill' }));
+  // Deduplicate: if same id+source appears in both, keep both but mark as bundled
+  return [...taggedDocs, ...taggedSkills];
 }
 
 /**
@@ -61,8 +96,7 @@ function applyFilters(entries, filters) {
 /**
  * Check if an id has collisions across sources.
  */
-function getEntriesById(id) {
-  const entries = applySourceFilter(getMergedEntries());
+function getEntriesById(id, entries) {
   return entries.filter((e) => e.id === id);
 }
 
@@ -79,20 +113,32 @@ export function isMultiSource() {
  */
 export function getDisplayId(entry) {
   if (!isMultiSource()) return entry.id;
-  const matches = getEntriesById(entry.id);
+  const all = applySourceFilter(getAllEntries());
+  const matches = getEntriesById(entry.id, all).filter((e) => e._type === entry._type);
   if (matches.length > 1) return `${entry._source}/${entry.id}`;
   return entry.id;
 }
 
 /**
- * Search entries by query string.
+ * Search entries by query string. Searches both docs and skills.
  */
 export function searchEntries(query, filters = {}) {
-  const entries = applySourceFilter(getMergedEntries());
+  const entries = applySourceFilter(getAllEntries());
   const q = query.toLowerCase();
   const words = q.split(/\s+/);
 
-  let results = entries.map((entry) => {
+  // Deduplicate: same id+source appearing as both doc and skill → show once
+  const seen = new Set();
+  const deduped = [];
+  for (const entry of entries) {
+    const key = `${entry._source}/${entry.id}`;
+    if (!seen.has(key)) {
+      seen.add(key);
+      deduped.push(entry);
+    }
+  }
+
+  let results = deduped.map((entry) => {
     let score = 0;
 
     if (entry.id === q) score += 100;
@@ -114,7 +160,6 @@ export function searchEntries(query, filters = {}) {
 
   results = results.filter((r) => r.score > 0);
 
-  // Apply tag/lang filters
   const filtered = applyFilters(results.map((r) => r.entry), filters);
   const filteredSet = new Set(filtered);
   results = results.filter((r) => filteredSet.has(r.entry));
@@ -124,22 +169,26 @@ export function searchEntries(query, filters = {}) {
 }
 
 /**
- * Get entry by id or source/id.
- * Returns { entry, ambiguous, alternatives } object.
+ * Get entry by id or source/id, from a specific type array.
+ * type: "doc" or "skill". If null, searches both.
  */
-export function getEntry(idOrNamespacedId) {
-  const entries = applySourceFilter(getMergedEntries());
+export function getEntry(idOrNamespacedId, type = null) {
+  const { docs, skills } = getMerged();
+  let pool;
+  if (type === 'doc') pool = applySourceFilter(docs);
+  else if (type === 'skill') pool = applySourceFilter(skills);
+  else pool = applySourceFilter([...docs, ...skills]);
 
   // Check for source/id format
   if (idOrNamespacedId.includes('/')) {
     const [sourceName, ...rest] = idOrNamespacedId.split('/');
     const id = rest.join('/');
-    const entry = entries.find((e) => e._source === sourceName && e.id === id);
+    const entry = pool.find((e) => e._source === sourceName && e.id === id);
     return entry ? { entry, ambiguous: false } : { entry: null, ambiguous: false };
   }
 
   // Bare id
-  const matches = entries.filter((e) => e.id === idOrNamespacedId);
+  const matches = pool.filter((e) => e.id === idOrNamespacedId);
   if (matches.length === 0) return { entry: null, ambiguous: false };
   if (matches.length === 1) return { entry: matches[0], ambiguous: false };
 
@@ -152,27 +201,48 @@ export function getEntry(idOrNamespacedId) {
 }
 
 /**
- * List entries with optional filters.
+ * List entries with optional filters. Searches both docs and skills, deduped.
  */
 export function listEntries(filters = {}) {
-  const entries = applySourceFilter(getMergedEntries());
-  return applyFilters(entries, filters);
+  const entries = applySourceFilter(getAllEntries());
+  // Deduplicate
+  const seen = new Set();
+  const deduped = [];
+  for (const entry of entries) {
+    const key = `${entry._source}/${entry.id}`;
+    if (!seen.has(key)) {
+      seen.add(key);
+      deduped.push(entry);
+    }
+  }
+  return applyFilters(deduped, filters);
 }
 
 /**
- * Resolve the doc path + source for an entry.
- * Returns { source, path, provides, files } or null.
+ * Resolve the doc path + source for a doc entry.
+ * Returns { source, path, files } or null.
  * If language is null and multiple languages exist, returns { needsLanguage: true, available: [...] }.
  */
 export function resolveDocPath(entry, language, version) {
   const lang = language ? normalizeLanguage(language) : null;
 
+  // Skills are flat — no language/version nesting
+  if (!entry.languages) {
+    // This is a skill entry — path is directly on the entry
+    if (!entry.path) return null;
+    return {
+      source: entry._sourceObj,
+      path: entry.path,
+      files: entry.files || [],
+    };
+  }
+
   let langObj = null;
   if (lang) {
-    langObj = entry.languages?.find((l) => l.language === lang);
-  } else if (entry.languages?.length === 1) {
+    langObj = entry.languages.find((l) => l.language === lang);
+  } else if (entry.languages.length === 1) {
     langObj = entry.languages[0];
-  } else if (entry.languages?.length > 1) {
+  } else if (entry.languages.length > 1) {
     return {
       needsLanguage: true,
       available: entry.languages.map((l) => l.language),
@@ -193,25 +263,17 @@ export function resolveDocPath(entry, language, version) {
   return {
     source: entry._sourceObj,
     path: verObj.path,
-    provides: verObj.provides || [],
     files: verObj.files || [],
   };
 }
 
 /**
  * Given a resolved path and a type ("doc" or "skill"), return the entry file path.
- * Returns { filePath, basePath } or { error }.
  */
 export function resolveEntryFile(resolved, type) {
   if (!resolved || resolved.needsLanguage) return { error: 'unresolved' };
 
   const fileName = type === 'skill' ? 'SKILL.md' : 'DOC.md';
-
-  if (resolved.provides.length > 0 && !resolved.provides.includes(type)) {
-    return {
-      error: `doesn't provide a ${type}. It has: ${resolved.provides.join(', ')}`,
-    };
-  }
 
   return {
     filePath: `${resolved.path}/${fileName}`,

@@ -1,22 +1,20 @@
 {
   "version": "1.0.0",
-  "base_url": "https://raw.githubusercontent.com/context-hub/context-hub/main",
+  "base_url": "https://cdn.contexthub.dev/v1",
   "generated": "2026-02-01T00:00:00.000Z",
-  "entries": [
+  "docs": [
     {
-      "id": "openai-chat",
-      "name": "OpenAI Chat API",
+      "name": "openai-chat",
       "description": "Chat completions with GPT models including streaming, function calling, and vision",
       "source": "maintainer",
-      "tags": ["docs", "openai", "chat", "llm", "ai"],
+      "tags": ["openai", "chat", "llm", "ai"],
       "languages": [
         {
           "language": "javascript",
           "versions": [
             {
               "version": "6.7.0",
-              "path": "libraries/openai/chat/javascript/6.7.0",
-              "provides": ["doc"],
+              "path": "openai/docs/chat/js-v6",
               "files": ["DOC.md"],
               "size": 45200,
               "lastUpdated": "2025-11-12"
@@ -29,8 +27,7 @@
           "versions": [
             {
               "version": "1.52.0",
-              "path": "libraries/openai/chat/python/1.52.0",
-              "provides": ["doc"],
+              "path": "openai/docs/chat/py-v1",
               "files": ["DOC.md"],
               "size": 42000,
               "lastUpdated": "2025-11-12"
@@ -41,19 +38,17 @@
       ]
     },
     {
-      "id": "stripe-payments",
-      "name": "Stripe Payments API",
+      "name": "stripe-payments",
       "description": "Payment processing with Stripe including payment intents, subscriptions, and webhooks",
       "source": "maintainer",
-      "tags": ["docs", "stripe", "payments", "billing"],
+      "tags": ["stripe", "payments", "billing"],
       "languages": [
         {
           "language": "javascript",
           "versions": [
             {
               "version": "14.0.0",
-              "path": "libraries/stripe/payments/javascript/14.0.0",
-              "provides": ["doc"],
+              "path": "stripe/docs/payments/js-v14",
               "files": ["DOC.md"],
               "size": 38000,
               "lastUpdated": "2025-11-12"
@@ -62,29 +57,18 @@
           "recommendedVersion": "14.0.0"
         }
       ]
-    },
+    }
+  ],
+  "skills": [
     {
-      "id": "playwright-login-flows",
-      "name": "Playwright Login Flow Patterns",
+      "name": "playwright-login-flows",
       "description": "Common login automation patterns for web apps using Playwright",
       "source": "community",
-      "tags": ["skill", "browser", "automation", "playwright", "login", "testing"],
-      "languages": [
-        {
-          "language": "typescript",
-          "versions": [
-            {
-              "version": "1.0.0",
-              "path": "skills/browser/playwright-login-flows/typescript/1.0.0",
-              "provides": ["skill"],
-              "files": ["SKILL.md"],
-              "size": 12000,
-              "lastUpdated": "2026-01-15"
-            }
-          ],
-          "recommendedVersion": "1.0.0"
-        }
-      ]
+      "tags": ["browser", "automation", "playwright", "login", "testing"],
+      "path": "playwright-community/skills/login-flows",
+      "files": ["SKILL.md"],
+      "size": 12000,
+      "lastUpdated": "2026-01-15"
     }
   ]
 }
