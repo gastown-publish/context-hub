@@ -19,13 +19,13 @@ async function fetchEntries(ids, opts, globalOpts) {
 
     if (result.ambiguous) {
       error(
-        `Multiple entries match "${id}". Use a source prefix:\n  ${result.alternatives.map((a) => `chub get ${a}`).join('\n  ')}`,
+        `Multiple entries with id "${id}". Be specific:\n  ${result.alternatives.join('\n  ')}`,
         globalOpts
       );
     }
 
     if (!result.entry) {
-      error(`No doc or skill found with id "${id}".`, globalOpts);
+      error(`Entry "${id}" not found.`, globalOpts);
     }
 
     const entry = result.entry;
@@ -33,12 +33,7 @@ async function fetchEntries(ids, opts, globalOpts) {
     const resolved = resolveDocPath(entry, opts.lang, opts.version);
 
     if (!resolved) {
-      if (opts.lang && entry.languages) {
-        const available = entry.languages.map((l) => l.language).join(', ');
-        error(`Language "${opts.lang}" is not available for "${id}". Available languages: ${available}.`, globalOpts);
-      } else {
-        error(`No content found for "${id}".`, globalOpts);
-      }
+      error(`Could not resolve path for "${id}" ${opts.lang || ''} ${opts.version || ''}`.trim(), globalOpts);
     }
 
     if (resolved.versionNotFound) {
@@ -57,7 +52,7 @@ async function fetchEntries(ids, opts, globalOpts) {
 
     const entryFile = resolveEntryFile(resolved, type);
     if (entryFile.error) {
-      error(`No content available for "${id}". Check that the source contains a valid DOC.md or SKILL.md, or run \`chub update\` to refresh remote registries.`, globalOpts);
+      error(`"${id}" ${entryFile.error}`, globalOpts);
     }
 
     // Determine which reference files exist (beyond DOC.md/SKILL.md)
@@ -88,7 +83,7 @@ async function fetchEntries(ids, opts, globalOpts) {
         results.push({ id: entry.id, type, content, path: entryFile.filePath, additionalFiles: refFiles });
       }
     } catch (err) {
-      error(`Failed to load "${id}": ${err.message}`, globalOpts);
+      error(err.message, globalOpts);
     }
   }
 
