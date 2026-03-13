@@ -13,6 +13,8 @@ metadata:
 
 REST API for managing online quizzes, exams, classes, organizations, and users. Supports programmatic question creation with 18+ question types, parametric generation, LTI integration, and webhooks.
 
+> **Note**: This documentation covers the most commonly used endpoints and features. For complete and up-to-date API documentation with rich examples, visit the [EduBase Developer Docs](https://developer.edubase.net) or the [llms.txt](https://developer.edubase.net/llms.txt) file.
+
 **Base URL:** `https://www.edubase.net/api/v1`
 
 Custom instances use their own domain: `https://{your-domain}.edubase.net/api/v1`
@@ -64,8 +66,26 @@ Assume tokens are short-lived. Revoke them after use.
 - **Pagination**: List endpoints accept `limit` (default: 16), `page` (default: 1), and optional `search` string.
 - **Language override**: Send `EduBase-Language: {ISO 639-1 code}` header to override context language.
 - **Versioning**: Append `/vXX` to the URL path (e.g. `/api/v1/exams`) or send `version=XX` as parameter.
-- **Dates**: Use `YYYY-MM-DD HH:ii:ss` format in UTC for datetime fields. Use `YYYY-MM-DD` for date fields.
-- **Booleans**: Send as string `true` or `false`.
+
+## Data Types
+
+| Type | Description |
+|------|-------------|
+| `string` | Text value |
+| `string{m,M}` | Text with minimum `m` and maximum `M` characters |
+| `string{N}` | Text with exactly `N` characters (shorthand for `{N,N}`) |
+| `string[email]` | Valid email address (e.g. `john@example.com`) |
+| `string[phone]` | Phone number in `+prefix number` format (e.g. `+1 1234567890`) |
+| `string[url]` | Valid URL (e.g. `https://www.example.com`) |
+| `string[json]` | Valid JSON string (e.g. `{"key": "value"}`) |
+| `integer` | Whole number, represented as string |
+| `float` | Decimal number with `.` as separator, represented as string |
+| `boolean` | String `true` or `false` |
+| `date` | Date in `YYYY-MM-DD` format |
+| `datetime` | Datetime in `YYYY-MM-DD HH:ii:ss` format (UTC) |
+| `list{type}` | Array of elements of the specified type |
+| `list` | Associative array (hash) of named elements |
+| `type/null` | The specified type or NULL if not set |
 
 ## Response Format
 
@@ -206,6 +226,19 @@ curl -X POST -d "app={app}&secret={secret}&id=MATH_ADDITION_001" \
 
 Generates a download link for the question in JSON format.
 
+### Get/Set External Question ID
+
+```bash
+# Get external ID by internal question identification string
+curl -d "app={app}&secret={secret}&question={question_id}" \
+  https://www.edubase.net/api/v1/question:id
+# Returns: {"question":"...","id":"MATH_001"}
+
+# Set external ID for a question
+curl -X POST -d "app={app}&secret={secret}&question={question_id}&id=MATH_001" \
+  https://www.edubase.net/api/v1/question:id
+```
+
 ### Question Types
 
 Supported types: `generic`, `text`, `numerical`, `date/time`, `expression`, `choice`, `multiple-choice`, `order`, `grouping`, `pairing`, `matrix`, `matrix:expression`, `set`, `set:text`, `true/false`, `free-text`, `file`, `hotspot`, `reading`.
@@ -290,7 +323,10 @@ curl -X POST "https://www.edubase.net/api/v1/exam" \
 
 Exam types: `exam` (regular), `championship` (competitive), `homework` (pausable), `survey` (optional grading).
 
-Optional: `copy_settings` to clone settings from an existing exam, `id` for external identifier.
+Optional parameters:
+- `copy_settings`: Exam ID to clone settings from
+- `keep_certificate_settings`: `true` to preserve certificate settings when copying (default: `false`)
+- `id`: External unique identifier (max 64 chars)
 
 ### Delete Exam
 
@@ -318,6 +354,11 @@ curl -X DELETE -d "app={app}&secret={secret}&exam={exam_id}&users=user1,user2" \
 ### Exam Branding
 
 ```bash
+# Get branding configuration
+curl -d "app={app}&secret={secret}&exam={exam_id}" \
+  https://www.edubase.net/api/v1/exam:branding
+# Returns: {"exam":"...","enabled":true,"type":"foreground","color":"blue"}
+
 # Set branding with image URL and color
 curl -X POST "https://www.edubase.net/api/v1/exam:branding" \
   --data "app={app}" \
@@ -326,6 +367,10 @@ curl -X POST "https://www.edubase.net/api/v1/exam:branding" \
   --data "type=foreground" \
   --data "image=https://example.com/logo.png" \
   --data "color=blue"
+
+# Remove branding
+curl -X DELETE -d "app={app}&secret={secret}&exam={exam_id}" \
+  https://www.edubase.net/api/v1/exam:branding
 ```
 
 Image types: `foreground` (logo) or `background` (cover). Colors: `branding`, `red`, `blue`, `yellow`, `green`, `purple`, `gray`. Image can be URL or base64 (PNG/JPEG/WebP).
@@ -399,12 +444,16 @@ curl -d "app={app}&secret={secret}&exam={exam_id}&user={user_id}" \
   https://www.edubase.net/api/v1/exam:results:user
 ```
 
+Returns play results including: `play`, `user`, `time_start`, `time_end`, `questions_total`, `questions_correct`, `points_total`, `points_correct`, `attempt` (attempt index), `valid`, `successful`.
+
 ### Get User Certificate
 
 ```bash
 curl -d "app={app}&secret={secret}&exam={exam_id}&user={user_id}" \
   https://www.edubase.net/api/v1/exam:certificates:user
 ```
+
+Returns: `play`, `user`, `archived`, `eligible`, `certified`, `serial` (if certified and serial numbering enabled), `expires` (if certified and expiration configured).
 
 ### Download Certificate
 
@@ -421,15 +470,13 @@ curl -X POST -d "app={app}&secret={secret}&exam={exam_id}&user={user_id}" \
 ```bash
 # List classes
 curl -d "app={app}&secret={secret}" https://www.edubase.net/api/v1/classes
+# Returns: [{"class":"...","id":null,"name":"..."}, ...]
 
 # Get class details
 curl -d "app={app}&secret={secret}&class={class_id}" \
   https://www.edubase.net/api/v1/class
+# Returns: {"class":"...","id":null,"name":"...","start":"2026-01-01 00:00:00","end":"2026-12-31 23:59:59"}
 
-# List class assignments
-curl -d "app={app}&secret={secret}&class={class_id}" \
-  https://www.edubase.net/api/v1/class:assignments
-```
 
 ### Manage Members
 
@@ -528,7 +575,7 @@ curl -d "app={app}&secret={secret}&query=john@example.com" \
 
 ## Permissions
 
-Check, grant, or revoke permissions on any content type (quiz, exam, class, course, event, organization, integration, scorm, video, tag):
+Check, grant, or revoke permissions on any content type. See the **permissions** reference file for full documentation.
 
 ```bash
 # Check permission
@@ -539,60 +586,33 @@ curl -d "app={app}&secret={secret}&exam={exam_id}&user={user_id}&permission=modi
 curl -X POST -d "app={app}&secret={secret}&exam={exam_id}&user={user_id}&permission=modify" \
   https://www.edubase.net/api/v1/exam:permission
 
-# Revoke permission
-curl -X DELETE -d "app={app}&secret={secret}&exam={exam_id}&user={user_id}&permission=modify" \
-  https://www.edubase.net/api/v1/exam:permission
-
 # Transfer ownership
 curl -X POST -d "app={app}&secret={secret}&exam={exam_id}&user={user_id}" \
   https://www.edubase.net/api/v1/exam:transfer
 ```
 
-Replace `exam` with any content type: `quiz`, `class`, `course`, `event`, `organization`, `integration`, `scorm`, `video`, `tag`.
+Supported content types: `quiz`, `exam`, `class`, `course`, `event`, `organization`, `integration`, `scorm`, `video`, `tag`.
 
 Permission levels: `view`, `report`, `control`, `modify`, `grant`, `admin`. Events also support `finances`.
 
 ## Tags
 
-Tags organize and categorize content. Create tags in the EduBase UI, then attach them to content via API.
-
-### List Tags
+Tags organize and categorize content. Create tags in the EduBase UI, then attach them to content via API. See the **tagging** reference file for full documentation.
 
 ```bash
+# List tags
 curl -d "app={app}&secret={secret}" https://www.edubase.net/api/v1/tags
-```
 
-### Get Tag Details
-
-```bash
-curl -d "app={app}&secret={secret}&tag={tag_id}" \
-  https://www.edubase.net/api/v1/tag
-# Returns: {"tag":"...","id":null,"name":"...","color":"#FF5733","icon":"fa-book"}
-```
-
-### Attach Tag to Content
-
-Works with all content types: `quiz`, `exam`, `class`, `course`, `event`, `organization`, `integration`, `scorm`, `video`.
-
-```bash
-# Check if tag is attached
-curl -d "app={app}&secret={secret}&exam={exam_id}&tag={tag_id}" \
-  https://www.edubase.net/api/v1/exam:tag
-
-# Attach tag
+# Attach tag to content
 curl -X POST -d "app={app}&secret={secret}&exam={exam_id}&tag={tag_id}" \
   https://www.edubase.net/api/v1/exam:tag
 
-# Detach tag
-curl -X DELETE -d "app={app}&secret={secret}&exam={exam_id}&tag={tag_id}" \
-  https://www.edubase.net/api/v1/exam:tag
-
-# List all tags on content
+# List tags on content
 curl -d "app={app}&secret={secret}&exam={exam_id}" \
   https://www.edubase.net/api/v1/exam:tags
 ```
 
-Replace `exam` with any content type (`quiz:tag`, `class:tag`, etc.).
+Supported content types: `quiz`, `exam`, `class`, `course`, `event`, `organization`, `integration`, `scorm`, `video`.
 
 ## Integrations
 
