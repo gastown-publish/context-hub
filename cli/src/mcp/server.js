@@ -164,9 +164,6 @@ process.on('unhandledRejection', (reason) => {
   _stderr.write(`[chub-mcp] Unhandled rejection: ${reason}\n`);
 });
 
-// Exit promptly when MCP host disconnects stdio.
-attachStdioShutdownHandlers({ stderr: _stderr });
-
 // --- Start Server ---
 
 // Best-effort registry load — server starts even if this fails
@@ -178,4 +175,10 @@ try {
 
 const transport = new StdioServerTransport();
 await server.connect(transport);
+
+// Exit promptly when MCP host disconnects stdio.
+// Must be after server.connect() so StdioServerTransport's data handler
+// is already wired — otherwise stdin.resume() discards incoming bytes.
+attachStdioShutdownHandlers({ stderr: _stderr });
+
 _stderr.write(`[chub-mcp] Server started (v${pkg.version})\n`);
