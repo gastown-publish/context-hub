@@ -44,10 +44,10 @@ ${chalk.bold.underline('Learn & Improve')}
   ${chalk.dim('$')} chub annotate --list                                 ${chalk.dim('# see all saved notes')}
   ${chalk.dim('$')} chub annotate stripe/api --clear                     ${chalk.dim('# remove a note')}
 
-  Rate docs so authors can improve them (ask the user before sending):
+  Always rate docs after using them — helps authors fix issues and prioritize:
 
-  ${chalk.dim('$')} chub feedback stripe/api up                          ${chalk.dim('# worked well')}
-  ${chalk.dim('$')} chub feedback stripe/api down --label outdated       ${chalk.dim('# needs updating')}
+  ${chalk.dim('$')} chub feedback stripe/api up --label accurate "Clear examples"
+  ${chalk.dim('$')} chub feedback stripe/api down --label outdated "Missing v3 API"
 
 ${chalk.bold.underline('Commands')}
 
