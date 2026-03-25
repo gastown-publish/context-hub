@@ -4,7 +4,7 @@ Context Hub has two mechanisms for agents to improve over time: **annotations** 
 
 ## Annotations
 
-Annotations are local notes that agents attach to docs or skills. They persist across sessions and appear automatically on future `chub get` calls.
+Annotations are local notes that agents attach to docs or skills. They persist across sessions and appear automatically on future `gashub get` calls.
 
 ### Why annotate?
 
@@ -16,24 +16,24 @@ Annotations close this gap. The agent saves what it learned, and next time it fe
 
 ```bash
 # Set an annotation
-chub annotate stripe/api "Webhook verification requires raw body — do not parse JSON before verifying"
+gashub annotate stripe/api "Webhook verification requires raw body — do not parse JSON before verifying"
 
 # View current annotation
-chub annotate stripe/api
+gashub annotate stripe/api
 
 # Replace with a new note
-chub annotate stripe/api "Updated: use the v2 webhook endpoint for new integrations"
+gashub annotate stripe/api "Updated: use the v2 webhook endpoint for new integrations"
 
 # Remove an annotation
-chub annotate stripe/api --clear
+gashub annotate stripe/api --clear
 
 # List all annotations
-chub annotate --list
+gashub annotate --list
 ```
 
 ### How annotations appear
 
-When an annotation exists, `chub get` appends it after the doc content:
+When an annotation exists, `gashub get` appends it after the doc content:
 
 ```
 # Stripe API
@@ -72,7 +72,7 @@ Don't annotate information that's already clearly stated in the doc.
 
 ### Storage
 
-Annotations are stored locally at `~/.chub/annotations/` as JSON files. They are specific to your machine and are not shared or synced. Each entry gets one annotation — setting a new note replaces the previous one.
+Annotations are stored locally at `~/.gashub/annotations/` as JSON files. They are specific to your machine and are not shared or synced. Each entry gets one annotation — setting a new note replaces the previous one.
 
 ## Feedback
 
@@ -82,17 +82,17 @@ Feedback helps maintainers understand what's working and what needs improvement.
 
 ```bash
 # Simple up/down rating
-chub feedback stripe/api up
-chub feedback stripe/api down
+gashub feedback stripe/api up
+gashub feedback stripe/api down
 
 # With labels for specific issues
-chub feedback openai/chat down --label outdated --label wrong-examples
+gashub feedback openai/chat down --label outdated --label wrong-examples
 
 # Target a specific file within a doc
-chub feedback acme/widgets down --file references/advanced.md --label incomplete
+gashub feedback acme/widgets down --file references/advanced.md --label incomplete
 
 # Include agent context
-chub feedback stripe/api up --agent "claude-code" --model "claude-sonnet-4"
+gashub feedback stripe/api up --agent "claude-code" --model "claude-sonnet-4"
 ```
 
 ### Labels
@@ -106,11 +106,11 @@ Labels help authors pinpoint specific issues:
 ### Disabling Feedback
 
 ```yaml
-# ~/.chub/config.yaml
+# ~/.gashub/config.yaml
 feedback: false
 ```
 
-Or via environment variable: `CHUB_FEEDBACK=0`. Check status with `chub feedback --status`.
+Or via environment variable: `CHUB_FEEDBACK=0`. Check status with `gashub feedback --status`.
 
 ## Annotations vs Feedback
 

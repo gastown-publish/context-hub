@@ -47,7 +47,7 @@ describe('showWelcomeIfNeeded', () => {
 
     expect(consoleSpy).toHaveBeenCalledTimes(1);
     const output = consoleSpy.mock.calls[0][0];
-    expect(output).toContain('Welcome to Context Hub (chub)!');
+    expect(output).toContain('Welcome to Context Hub (gashub)!');
     expect(output).toContain('Terms of Service');
     expect(output).toContain('feedback: false');
     expect(output).toContain(join(TEST_DIR, 'config.yaml'));

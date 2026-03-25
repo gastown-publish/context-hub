@@ -116,7 +116,7 @@ export async function handleGet({ id, lang, version, full = false, file }) {
     if (!result.entry) {
       trackEvent('doc_not_found', { entry_id: id, via: 'mcp' }).catch(() => {});
       return errorResult(`Entry "${id}" not found.`, {
-        suggestion: 'Use chub_search to find available entries.',
+        suggestion: 'Use gashub_search to find available entries.',
       });
     }
 

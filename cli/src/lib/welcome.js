@@ -21,12 +21,12 @@ export function showWelcomeIfNeeded(opts = {}) {
 
   // Print to stderr so it doesn't interfere with JSON/piped output
   console.error(`
-${chalk.bold('Welcome to Context Hub (chub)!')} Chub helps your AI coding agents make API calls correctly, by providing \
+${chalk.bold('Welcome to Context Hub (gashub)!')} Gashub helps your AI coding agents make API calls correctly, by providing \
 the latest documentation.
 
-By using chub, you agree to the Terms of Service at ${chalk.underline('https://www.aichub.org/tos.html')}
+By using gashub, you agree to the Terms of Service at ${chalk.underline('https://www.aichub.org/tos.html')}
 
-Chub asks agents to provide feedback on documentation, and this feedback is used to improve docs for the developer \
+Gashub asks agents to provide feedback on documentation, and this feedback is used to improve docs for the developer \
 community. If you wish to disable this feedback, add ${chalk.bold('"feedback: false"')} to ${chalk.bold(configPath)}. See \
 ${chalk.underline('https://github.com/gastown-publish/context-hub')} for details.
 `);

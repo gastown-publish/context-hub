@@ -19,7 +19,7 @@ const DEFAULTS = {
 let _config = null;
 
 export function getChubDir() {
-  return process.env.CHUB_DIR || join(homedir(), '.chub');
+  return process.env.CHUB_DIR || join(homedir(), '.gashub');
 }
 
 export function loadConfig() {

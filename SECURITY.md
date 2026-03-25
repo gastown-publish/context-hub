@@ -21,8 +21,8 @@ We will respond promptly and aim to provide a fix within 7 days for critical iss
 
 ## Scope
 
-This policy covers the `@gastown/chub` CLI package and the Context Hub API at `api.aichub.org`.
+This policy covers the `@gastown/gashub` CLI package and the Context Hub API at `api.aichub.org`.
 
 ## Telemetry & Privacy
 
-Context Hub collects optional, anonymous telemetry (disabled with `telemetry: false` in `~/.chub/config.yaml`). No personally identifiable information is collected. See [DESIGN.md](docs/design.md) for details on the hashed machine identifier.
+Context Hub collects optional, anonymous telemetry (disabled with `telemetry: false` in `~/.gashub/config.yaml`). No personally identifiable information is collected. See [DESIGN.md](docs/design.md) for details on the hashed machine identifier.

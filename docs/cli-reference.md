@@ -1,6 +1,6 @@
 # CLI Reference
 
-Full command reference for Context Hub (`chub`).
+Full command reference for Context Hub (`gashub`).
 
 ## Global Flags
 
@@ -10,7 +10,7 @@ Full command reference for Context Hub (`chub`).
 | `--version` | Print CLI version |
 | `--help` | Show help |
 
-## chub search [query]
+## gashub search [query]
 
 Search docs and skills. No query lists all entries.
 
@@ -21,15 +21,15 @@ Search docs and skills. No query lists all entries.
 | `--limit <n>` | Max results (default: 20) |
 
 ```bash
-chub search                          # list everything
-chub search "stripe"                 # fuzzy search by name/description
-chub search stripe/payments          # exact id — shows full detail
-chub search --tags automation        # filter by tag
+gashub search                          # list everything
+gashub search "stripe"                 # fuzzy search by name/description
+gashub search stripe/payments          # exact id — shows full detail
+gashub search --tags automation        # filter by tag
 ```
 
 **Exact ID match** returns the full entry detail (versions, languages, files). **Fuzzy search** returns a list of matches ranked by relevance.
 
-## chub get \<ids...\>
+## gashub get \<ids...\>
 
 Fetch one or more docs or skills by ID. Auto-detects type (doc vs skill). Auto-infers language when only one variant exists.
 
@@ -42,11 +42,11 @@ Fetch one or more docs or skills by ID. Auto-detects type (doc vs skill). Auto-i
 | `-o, --output <path>` | Write to file or directory |
 
 ```bash
-chub get stripe/api                  # single doc (auto-infers lang)
-chub get openai/chat-api --lang py   # specific language
-chub get pw-community/login-flows    # fetch a skill
-chub get stripe/api openai/chat-api  # multiple entries
-chub get stripe/api -o .context/     # save to file
+gashub get stripe/api                  # single doc (auto-infers lang)
+gashub get openai/chat-api --lang py   # specific language
+gashub get pw-community/login-flows    # fetch a skill
+gashub get stripe/api openai/chat-api  # multiple entries
+gashub get stripe/api -o .context/     # save to file
 ```
 
 ### Incremental Fetch
@@ -58,15 +58,15 @@ When a doc has reference files beyond the main entry point, the output includes 
 Additional files available (use --file to fetch):
   references/advanced.md
   references/errors.md
-Example: chub get acme/widgets --file references/advanced.md
+Example: gashub get acme/widgets --file references/advanced.md
 ```
 
 Fetch only what you need:
 
 ```bash
-chub get acme/widgets --file references/advanced.md       # one file
-chub get acme/widgets --file advanced.md,errors.md         # multiple
-chub get acme/widgets --full                               # everything
+gashub get acme/widgets --file references/advanced.md       # one file
+gashub get acme/widgets --file advanced.md,errors.md         # multiple
+gashub get acme/widgets --full                               # everything
 ```
 
 With `--json`, the response includes an `additionalFiles` array listing available reference files.
@@ -77,7 +77,7 @@ If a doc is available in multiple languages and `--lang` is not specified, the C
 
 If a doc has only one language, `--lang` is not required — it's auto-inferred.
 
-## chub annotate [id] [note]
+## gashub annotate [id] [note]
 
 Attach persistent notes to a doc or skill. See [Feedback and Annotations](feedback-and-annotations.md) for the full guide.
 
@@ -87,14 +87,14 @@ Attach persistent notes to a doc or skill. See [Feedback and Annotations](feedba
 | `--list` | List all annotations |
 
 ```bash
-chub annotate stripe/api "Use idempotency keys for POST requests"
-chub annotate stripe/api                   # view current note
-chub annotate stripe/api "new note"        # replaces previous
-chub annotate stripe/api --clear           # remove
-chub annotate --list                       # list all
+gashub annotate stripe/api "Use idempotency keys for POST requests"
+gashub annotate stripe/api                   # view current note
+gashub annotate stripe/api "new note"        # replaces previous
+gashub annotate stripe/api --clear           # remove
+gashub annotate --list                       # list all
 ```
 
-## chub feedback [id] [rating] [comment]
+## gashub feedback [id] [rating] [comment]
 
 Rate a doc or skill. Feedback is sent to the registry for maintainers. See [Feedback and Annotations](feedback-and-annotations.md) for details.
 
@@ -110,11 +110,11 @@ Rate a doc or skill. Feedback is sent to the registry for maintainers. See [Feed
 Valid labels: `accurate`, `well-structured`, `helpful`, `good-examples`, `outdated`, `inaccurate`, `incomplete`, `wrong-examples`, `wrong-version`, `poorly-structured`.
 
 ```bash
-chub feedback stripe/api up "Clear examples, well structured"
-chub feedback openai/chat down --label outdated --label wrong-examples
+gashub feedback stripe/api up "Clear examples, well structured"
+gashub feedback openai/chat down --label outdated --label wrong-examples
 ```
 
-## chub update
+## gashub update
 
 Download or refresh the cached registry from remote sources.
 
@@ -123,14 +123,14 @@ Download or refresh the cached registry from remote sources.
 | `--force` | Re-download even if cache is fresh |
 | `--full` | Download full bundle for offline use |
 
-## chub cache status\|clear
+## gashub cache status\|clear
 
 Manage the local cache.
 
 - `cache status` — shows cache info (sources, registries, sizes, last updated)
 - `cache clear` — removes cached content (`--force` to skip confirmation)
 
-## chub build \<content-dir\>
+## gashub build \<content-dir\>
 
 Build a registry from a local content directory. See the [Content Guide](content-guide.md) for how to structure your content.
 
@@ -141,34 +141,34 @@ Build a registry from a local content directory. See the [Content Guide](content
 | `--validate-only` | Validate content without building |
 
 ```bash
-chub build my-content/                           # build to my-content/dist/
-chub build my-content/ -o dist/                  # custom output dir
-chub build my-content/ --validate-only           # validate only
+gashub build my-content/                           # build to my-content/dist/
+gashub build my-content/ -o dist/                  # custom output dir
+gashub build my-content/ --validate-only           # validate only
 ```
 
 ## Piping Patterns
 
 ```bash
 # Search, pick first result, fetch
-ID=$(chub search "stripe" --json | jq -r '.results[0].id')
-chub get "$ID" -o .context/stripe.md
+ID=$(gashub search "stripe" --json | jq -r '.results[0].id')
+gashub get "$ID" -o .context/stripe.md
 
 # Fetch multiple docs at once
-chub get openai/chat stripe/api -o .context/
+gashub get openai/chat stripe/api -o .context/
 
 # Check what additional files are available
-chub get acme/widgets --json | jq '.additionalFiles'
+gashub get acme/widgets --json | jq '.additionalFiles'
 
 # Fetch a specific reference file
-chub get acme/widgets --file references/advanced.md
+gashub get acme/widgets --file references/advanced.md
 
 # List all annotations as JSON
-chub annotate --list --json
+gashub annotate --list --json
 ```
 
 ## Configuration
 
-Config lives at `~/.chub/config.yaml`:
+Config lives at `~/.gashub/config.yaml`:
 
 ```yaml
 sources:
@@ -180,7 +180,7 @@ sources:
 source: "official,maintainer,community"   # trust policy
 refresh_interval: 86400                   # cache TTL in seconds (24h)
 telemetry: true                           # anonymous usage analytics (passive)
-feedback: true                            # allow chub feedback to send ratings (explicit)
+feedback: true                            # allow gashub feedback to send ratings (explicit)
 ```
 
 ### Telemetry
@@ -195,7 +195,7 @@ Or via environment variable: `CHUB_TELEMETRY=0`
 
 ### Feedback
 
-The `chub feedback` command sends doc/skill ratings to maintainers. This is separate from telemetry — you can disable passive analytics while still being able to rate docs.
+The `gashub feedback` command sends doc/skill ratings to maintainers. This is separate from telemetry — you can disable passive analytics while still being able to rate docs.
 
 Opt out:
 ```yaml
@@ -208,5 +208,5 @@ Or via environment variable: `CHUB_FEEDBACK=0`
 When multiple sources define the same entry ID, prefix with the source name to disambiguate:
 
 ```bash
-chub get internal:openai/chat
+gashub get internal:openai/chat
 ```

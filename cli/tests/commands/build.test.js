@@ -4,7 +4,7 @@ import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-const CLI_BIN = join(import.meta.dirname, '..', '..', 'bin', 'chub');
+const CLI_BIN = join(import.meta.dirname, '..', '..', 'bin', 'gashub');
 const FIXTURES = join(import.meta.dirname, '..', '..', 'test', 'fixtures');
 const BUILD_TEST_TIMEOUT = 15000;
 const itBuild = (name, fn) => it(name, { timeout: BUILD_TEST_TIMEOUT }, fn);

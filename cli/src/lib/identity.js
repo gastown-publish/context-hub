@@ -43,7 +43,7 @@ function getMachineUUID() {
 
 /**
  * Get or create a stable, anonymous client ID.
- * Checks ~/.chub/client_id for a cached 64-char hex string.
+ * Checks ~/.gashub/client_id for a cached 64-char hex string.
  * If not found, hashes the machine UUID with SHA-256 and saves it.
  */
 export async function getOrCreateClientId() {

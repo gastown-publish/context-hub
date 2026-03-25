@@ -79,8 +79,8 @@ author/docs/entry-name/
 Agents request a specific version with `--version`:
 
 ```bash
-chub get author/entry-name                    # latest version (recommended)
-chub get author/entry-name --version 1.0.0    # specific version
+gashub get author/entry-name                    # latest version (recommended)
+gashub get author/entry-name --version 1.0.0    # specific version
 ```
 
 If a requested version doesn't exist, the CLI lists available versions.
@@ -105,7 +105,7 @@ author/docs/widgets/
     errors.md
 ```
 
-These are discoverable via `chub get` (shown in the footer) and fetchable with `--file` or `--full`.
+These are discoverable via `gashub get` (shown in the footer) and fetchable with `--file` or `--full`.
 
 ## Frontmatter
 
@@ -194,12 +194,12 @@ Content is markdown, written for LLM consumption. Keep these in mind:
 
 ## Building
 
-Use `chub build` to compile your content directory into a registry:
+Use `gashub build` to compile your content directory into a registry:
 
 ```bash
-chub build my-content/                           # build to my-content/dist/
-chub build my-content/ -o dist/                  # custom output directory
-chub build my-content/ --validate-only           # validate without building
+gashub build my-content/                           # build to my-content/dist/
+gashub build my-content/ -o dist/                  # custom output directory
+gashub build my-content/ --validate-only           # validate without building
 ```
 
 The build process:
@@ -213,7 +213,7 @@ The build process:
 Run `--validate-only` to check your content without building:
 
 ```bash
-chub build my-content/ --validate-only
+gashub build my-content/ --validate-only
 ```
 
 This reports the number of docs and skills found, and flags any frontmatter errors.
@@ -223,7 +223,7 @@ This reports the number of docs and skills found, and flags any frontmatter erro
 Point your config at the build output to use it alongside the public registry:
 
 ```yaml
-# ~/.chub/config.yaml
+# ~/.gashub/config.yaml
 sources:
   - name: community
     url: https://cdn.aichub.org/v1
@@ -231,4 +231,4 @@ sources:
     path: /path/to/my-content/dist
 ```
 
-Now `chub search` and `chub get` cover both public and your local content.
+Now `gashub search` and `gashub get` cover both public and your local content.

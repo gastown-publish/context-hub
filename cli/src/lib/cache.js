@@ -418,7 +418,7 @@ export async function ensureRegistry() {
     if (existsSync(bundledSearchIndex)) {
       writeFileSync(getSourceSearchIndexPath('default'), readFileSync(bundledSearchIndex, 'utf8'));
     }
-    writeMeta('default', { lastUpdated: 0, bundledSeed: true }); // lastUpdated=0 → stale, so chub update will refresh
+    writeMeta('default', { lastUpdated: 0, bundledSeed: true }); // lastUpdated=0 → stale, so gashub update will refresh
     return;
   }
 

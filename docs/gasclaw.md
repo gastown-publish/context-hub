@@ -37,7 +37,7 @@ Agents communicate via the `gastown_publish` Telegram forum group (`-10038107098
 | Agent | Role |
 |-------|------|
 | `main` | Primary overseer — coordinates work, responds to messages |
-| `content-curator` | Validates content packs, runs `chub build`, checks quality |
+| `content-curator` | Validates content packs, runs `gashubbuild`, checks quality |
 | `mcp-tester` | Smoke-tests MCP server, verifies tool responses |
 
 ## CI and PR Workflow
@@ -53,16 +53,16 @@ Agents communicate via the `gastown_publish` Telegram forum group (`-10038107098
 
 ```bash
 # Inside container or from host
-chub build content/ -o dist/
-chub search "test query"    # verify index
-chub get <id> --lang py     # verify fetch
+gashub build content/ -o dist/
+gashub search "test query"    # verify index
+gashub get <id> --lang py     # verify fetch
 ```
 
 ### MCP Smoke Test
 
 ```bash
-chub-mcp &                   # start MCP server
-# Send tools/list via stdio, verify chub_search and chub_get appear
+gashub-mcp &                   # start MCP server
+# Send tools/list via stdio, verify gashub_search and gashub_get appear
 ```
 
 ### Syncing Upstream

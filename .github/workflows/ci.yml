@@ -19,5 +19,5 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: rm -f package-lock.json && npm install
       - run: cd cli && npm test
-      - run: node cli/bin/chub build content/ --validate-only
+      - run: node cli/bin/gashub build content/ --validate-only
       - run: cd cli && npm audit --audit-level=high

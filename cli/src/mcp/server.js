@@ -1,7 +1,7 @@
 /**
  * Context Hub MCP Server.
  *
- * Exposes chub search, get, list, annotate, and feedback as MCP tools
+ * Exposes gashub search, get, list, annotate, and feedback as MCP tools
  * for use with Claude Code, Cursor, and other MCP-compatible agents.
  */
 
@@ -31,14 +31,14 @@ const pkg = JSON.parse(readFileSync(join(__dirname, '..', '..', 'package.json'),
 
 // Create server
 const server = new McpServer({
-  name: 'chub',
+  name: 'gashub',
   version: pkg.version,
 });
 
 // --- Register Tools ---
 
 server.tool(
-  'chub_search',
+  'gashub_search',
   'Search Context Hub for docs and skills by query, tags, or language',
   {
     query: z.string().optional().describe('Search query. Omit to list all entries.'),
@@ -50,7 +50,7 @@ server.tool(
 );
 
 server.tool(
-  'chub_get',
+  'gashub_get',
   'Fetch the content of a doc or skill by ID from Context Hub',
   {
     id: z.string().describe('Entry ID (e.g. "openai/chat", "stripe/api"). Use source:id for disambiguation.'),
@@ -63,7 +63,7 @@ server.tool(
 );
 
 server.tool(
-  'chub_list',
+  'gashub_list',
   'List all available docs and skills in Context Hub',
   {
     tags: z.string().optional().describe('Comma-separated tag filter'),
@@ -74,7 +74,7 @@ server.tool(
 );
 
 server.tool(
-  'chub_annotate',
+  'gashub_annotate',
   'Read, write, clear, or list agent annotations. Modes: (1) list=true to list all, (2) id+note to write, (3) id+clear=true to delete, (4) id alone to read. Annotations persist locally across sessions.',
   {
     id: z.string().optional().describe('Entry ID to annotate (e.g. "openai/chat"). Required unless using list mode.'),
@@ -86,7 +86,7 @@ server.tool(
 );
 
 server.tool(
-  'chub_feedback',
+  'gashub_feedback',
   'Send quality feedback (thumbs up/down) for a doc or skill to help authors improve content',
   {
     id: z.string().describe('Entry ID to rate (e.g. "openai/chat")'),
@@ -109,7 +109,7 @@ server.tool(
 
 server.resource(
   'registry',
-  'chub://registry',
+  'gashub://registry',
   {
     title: 'Context Hub Registry',
     description: 'Browse the full Context Hub registry of docs and skills',
@@ -147,7 +147,7 @@ server.resource(
         contents: [{
           uri: uri.href,
           mimeType: 'application/json',
-          text: JSON.stringify({ error: 'Registry not loaded. Run "chub update" first.' }),
+          text: JSON.stringify({ error: 'Registry not loaded. Run "gashub update" first.' }),
         }],
       };
     }
@@ -158,10 +158,10 @@ server.resource(
 
 // Prevent the server from crashing on unhandled errors (long-lived process)
 process.on('uncaughtException', (err) => {
-  _stderr.write(`[chub-mcp] Uncaught exception: ${err.message}\n`);
+  _stderr.write(`[gashub-mcp] Uncaught exception: ${err.message}\n`);
 });
 process.on('unhandledRejection', (reason) => {
-  _stderr.write(`[chub-mcp] Unhandled rejection: ${reason}\n`);
+  _stderr.write(`[gashub-mcp] Unhandled rejection: ${reason}\n`);
 });
 
 // --- Start Server ---
@@ -170,7 +170,7 @@ process.on('unhandledRejection', (reason) => {
 try {
   await ensureRegistry();
 } catch (err) {
-  _stderr.write(`[chub-mcp] Warning: Registry not loaded: ${err.message}\n`);
+  _stderr.write(`[gashub-mcp] Warning: Registry not loaded: ${err.message}\n`);
 }
 
 const transport = new StdioServerTransport();
@@ -181,4 +181,4 @@ await server.connect(transport);
 // is already wired — otherwise stdin.resume() discards incoming bytes.
 attachStdioShutdownHandlers({ stderr: _stderr });
 
-_stderr.write(`[chub-mcp] Server started (v${pkg.version})\n`);
+_stderr.write(`[gashub-mcp] Server started (v${pkg.version})\n`);

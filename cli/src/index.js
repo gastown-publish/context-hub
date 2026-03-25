@@ -21,33 +21,33 @@ setCliVersion(pkg.version);
 
 function printUsage() {
   console.log(`
-${chalk.bold('chub')} — Context Hub CLI v${pkg.version}
+${chalk.bold('gashub')} — Context Hub CLI v${pkg.version}
 Search and retrieve LLM-optimized docs and skills.
 
 ${chalk.bold.underline('Getting Started')}
 
-  ${chalk.dim('$')} chub update                                ${chalk.dim('# download the registry')}
-  ${chalk.dim('$')} chub search                                ${chalk.dim('# list everything available')}
-  ${chalk.dim('$')} chub search "stripe"                       ${chalk.dim('# fuzzy search')}
-  ${chalk.dim('$')} chub search stripe/payments                ${chalk.dim('# exact id → full detail')}
-  ${chalk.dim('$')} chub get stripe/api                        ${chalk.dim('# print doc to terminal')}
-  ${chalk.dim('$')} chub get stripe/api -o doc.md              ${chalk.dim('# save to file')}
-  ${chalk.dim('$')} chub get openai/chat --lang py             ${chalk.dim('# specific language')}
-  ${chalk.dim('$')} chub get pw-community/login-flows          ${chalk.dim('# fetch a skill')}
-  ${chalk.dim('$')} chub get openai/chat stripe/api            ${chalk.dim('# fetch multiple')}
+  ${chalk.dim('$')} gashub update                                ${chalk.dim('# download the registry')}
+  ${chalk.dim('$')} gashub search                                ${chalk.dim('# list everything available')}
+  ${chalk.dim('$')} gashub search "stripe"                       ${chalk.dim('# fuzzy search')}
+  ${chalk.dim('$')} gashub search stripe/payments                ${chalk.dim('# exact id → full detail')}
+  ${chalk.dim('$')} gashub get stripe/api                        ${chalk.dim('# print doc to terminal')}
+  ${chalk.dim('$')} gashub get stripe/api -o doc.md              ${chalk.dim('# save to file')}
+  ${chalk.dim('$')} gashub get openai/chat --lang py             ${chalk.dim('# specific language')}
+  ${chalk.dim('$')} gashub get pw-community/login-flows          ${chalk.dim('# fetch a skill')}
+  ${chalk.dim('$')} gashub get openai/chat stripe/api            ${chalk.dim('# fetch multiple')}
 
 ${chalk.bold.underline('Learn & Improve')}
 
   After using a doc, save what you learned so future sessions start smarter:
 
-  ${chalk.dim('$')} chub annotate stripe/api "Webhook needs raw body"   ${chalk.dim('# persists across sessions')}
-  ${chalk.dim('$')} chub annotate --list                                 ${chalk.dim('# see all saved notes')}
-  ${chalk.dim('$')} chub annotate stripe/api --clear                     ${chalk.dim('# remove a note')}
+  ${chalk.dim('$')} gashub annotate stripe/api "Webhook needs raw body"   ${chalk.dim('# persists across sessions')}
+  ${chalk.dim('$')} gashub annotate --list                                 ${chalk.dim('# see all saved notes')}
+  ${chalk.dim('$')} gashub annotate stripe/api --clear                     ${chalk.dim('# remove a note')}
 
   Always rate docs after using them — helps authors fix issues and prioritize:
 
-  ${chalk.dim('$')} chub feedback stripe/api up --label accurate "Clear examples"
-  ${chalk.dim('$')} chub feedback stripe/api down --label outdated "Missing v3 API"
+  ${chalk.dim('$')} gashub feedback stripe/api up --label accurate "Clear examples"
+  ${chalk.dim('$')} gashub feedback stripe/api down --label outdated "Missing v3 API"
 
 ${chalk.bold.underline('Commands')}
 
@@ -70,16 +70,16 @@ ${chalk.bold.underline('Flags')}
 ${chalk.bold.underline('Agent Piping Patterns')}
 
   ${chalk.dim('# Get the top result id')}
-  ${chalk.dim('$')} chub search "stripe" --json | jq -r '.results[0].id'
+  ${chalk.dim('$')} gashub search "stripe" --json | jq -r '.results[0].id'
 
   ${chalk.dim('# Search → pick → fetch → save')}
-  ${chalk.dim('$')} ID=$(chub search "stripe" --json | jq -r '.results[0].id')
-  ${chalk.dim('$')} chub get "$ID" --lang js -o .context/stripe.md
+  ${chalk.dim('$')} ID=$(gashub search "stripe" --json | jq -r '.results[0].id')
+  ${chalk.dim('$')} gashub get "$ID" --lang js -o .context/stripe.md
 
   ${chalk.dim('# Fetch multiple at once')}
-  ${chalk.dim('$')} chub get openai/chat stripe/api -o .context/
+  ${chalk.dim('$')} gashub get openai/chat stripe/api -o .context/
 
-${chalk.bold.underline('Multi-Source Config')} ${chalk.dim('(~/.chub/config.yaml)')}
+${chalk.bold.underline('Multi-Source Config')} ${chalk.dim('(~/.gashub/config.yaml)')}
 
   ${chalk.dim('sources:')}
   ${chalk.dim('  - name: community')}
@@ -87,14 +87,14 @@ ${chalk.bold.underline('Multi-Source Config')} ${chalk.dim('(~/.chub/config.yaml
   ${chalk.dim('  - name: internal')}
   ${chalk.dim('    path: /path/to/local/docs')}
 
-  ${chalk.dim('# On id collision, use source: prefix: chub get internal:openai/chat')}
+  ${chalk.dim('# On id collision, use source: prefix: gashub get internal:openai/chat')}
 `);
 }
 
 const program = new Command();
 
 program
-  .name('chub')
+  .name('gashub')
   .description('Context Hub - search and retrieve LLM-optimized docs and skills')
   .version(pkg.version, '-V, --cli-version')
   .option('--json', 'Output as JSON (machine-readable)')
@@ -110,7 +110,7 @@ program.hook('preAction', async (thisCommand) => {
   showWelcomeIfNeeded(globalOpts);
 
   const cmdName = thisCommand.args?.[0] || thisCommand.name();
-  if (cmdName !== 'chub') {
+  if (cmdName !== 'gashub') {
     // Only initialize identity and track if telemetry is enabled
     // Respects CHUB_TELEMETRY=0 — no client_id file created, no events sent
     try {
@@ -132,12 +132,12 @@ program.hook('preAction', async (thisCommand) => {
   if (SKIP_REGISTRY.includes(cmdName)) return;
   if (thisCommand.parent?.name() === 'cache') return;
   // Don't fetch registry for default action (no command)
-  if (cmdName === 'chub') return;
+  if (cmdName === 'gashub') return;
   try {
     await ensureRegistry();
   } catch (err) {
     await trackEvent('command_error', { command: cmdName, error_type: 'registry_unavailable' });
-    error(`Registry not available: ${err.message}. Run \`chub update\` to refresh remote registries, or check that local source paths in ~/.chub/config.yaml are correct.`, globalOpts);
+    error(`Registry not available: ${err.message}. Run \`gashub update\` to refresh remote registries, or check that local source paths in ~/.gashub/config.yaml are correct.`, globalOpts);
   }
 });
 

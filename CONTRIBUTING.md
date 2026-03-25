@@ -20,8 +20,8 @@ npm install
 ### Running the CLI locally
 
 ```bash
-node cli/bin/chub --help
-node cli/bin/chub build content/ --validate-only
+node cli/bin/gashub --help
+node cli/bin/gashub build content/ --validate-only
 ```
 
 ### Running Tests
@@ -41,7 +41,7 @@ npm run test:coverage # with coverage
 2. Make your changes
 3. Add or update tests as needed
 4. Ensure all tests pass: `cd cli && npm test`
-5. Validate the build: `node cli/bin/chub build content/ --validate-only`
+5. Validate the build: `node cli/bin/gashub build content/ --validate-only`
 6. Submit a pull request
 
 ### Code Style
@@ -55,7 +55,7 @@ npm run test:coverage # with coverage
 
 ```
 cli/
-  bin/chub              # Executable entry point
+  bin/gashub              # Executable entry point
   src/
     index.js            # CLI setup (Commander)
     commands/           # Command implementations
@@ -89,7 +89,7 @@ metadata:
 ```
 
 3. Add reference files in a `references/` subdirectory if needed
-4. Validate: `chub build <content-dir> --validate-only`
+4. Validate: `gashub build <content-dir> --validate-only`
 
 ### Contributing a Skill
 

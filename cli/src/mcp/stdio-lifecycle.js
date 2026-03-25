@@ -1,5 +1,5 @@
 /**
- * Attach stdio lifecycle guards so chub-mcp exits cleanly when the parent
+ * Attach stdio lifecycle guards so gashub-mcp exits cleanly when the parent
  * MCP host goes away (EOF / closed pipe).
  */
 export function attachStdioShutdownHandlers({
@@ -15,7 +15,7 @@ export function attachStdioShutdownHandlers({
     shuttingDown = true;
 
     try {
-      stderr.write(`[chub-mcp] ${reason}\n`);
+      stderr.write(`[gashub-mcp] ${reason}\n`);
     } catch {
       // ignore stderr write errors during shutdown
     }

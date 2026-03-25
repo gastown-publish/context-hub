@@ -1,6 +1,6 @@
-# Context Hub (chub)
+# Context Hub (gashub)
 
-> CLI tool for searching and fetching LLM-optimized documentation and skills. Install: npm install -g @gastown/chub
+> CLI tool for searching and fetching LLM-optimized documentation and skills. Install: npm install -g @gastown/gashub
 
 ## Content Types
 
@@ -9,7 +9,7 @@
 
 ## Commands
 
-### chub search [query]
+### gashub search [query]
 Search docs and skills. No query lists all entries.
 
 Flags:
@@ -17,12 +17,12 @@ Flags:
   --json              JSON output with { total, results[] }
 
 Examples:
-  chub search                         # list everything
-  chub search "stripe"                # fuzzy search by name/description
-  chub search stripe/payments         # exact id returns full detail
-  chub search --tags automation       # filter by tag
+  gashub search                         # list everything
+  gashub search "stripe"                # fuzzy search by name/description
+  gashub search stripe/payments         # exact id returns full detail
+  gashub search --tags automation       # filter by tag
 
-### chub get <ids...>
+### gashub get <ids...>
 Fetch one or more docs or skills by ID. Auto-detects type (doc vs skill). Auto-infers language when only one is available.
 
 Flags:
@@ -34,21 +34,21 @@ Flags:
   --json              JSON output with { id, type, content, path, additionalFiles?, annotation? }
 
 Examples:
-  chub get stripe/api                           # single doc (auto-infers lang if only one)
-  chub get openai/chat-api --lang py            # specific language
-  chub get pw-community/login-flows             # fetch a skill
-  chub get stripe/api openai/chat-api           # multiple entries
-  chub get acme/widgets --file references/advanced.md   # specific reference file
-  chub get acme/widgets --full                  # all files
-  chub get stripe/api -o .context/stripe.md     # save to file
+  gashub get stripe/api                           # single doc (auto-infers lang if only one)
+  gashub get openai/chat-api --lang py            # specific language
+  gashub get pw-community/login-flows             # fetch a skill
+  gashub get stripe/api openai/chat-api           # multiple entries
+  gashub get acme/widgets --file references/advanced.md   # specific reference file
+  gashub get acme/widgets --full                  # all files
+  gashub get stripe/api -o .context/stripe.md     # save to file
 
 Behavior:
   - When additional reference files exist beyond the entry point, output includes a footer listing them
   - Use --file to fetch specific reference files without fetching everything
   - If an annotation exists for the entry, it is appended after the content
 
-### chub annotate [id] [note]
-Attach persistent notes to a doc or skill. Notes appear on future `chub get` calls.
+### gashub annotate [id] [note]
+Attach persistent notes to a doc or skill. Notes appear on future `gashub get` calls.
 
 Flags:
   --clear             Remove annotation for this entry
@@ -56,15 +56,15 @@ Flags:
   --json              JSON output
 
 Examples:
-  chub annotate stripe/api "Use idempotency keys for POST requests"   # set note
-  chub annotate stripe/api                     # view current note
-  chub annotate stripe/api "Updated note"      # replaces previous note
-  chub annotate stripe/api --clear             # remove note
-  chub annotate --list                         # list all annotations
+  gashub annotate stripe/api "Use idempotency keys for POST requests"   # set note
+  gashub annotate stripe/api                     # view current note
+  gashub annotate stripe/api "Updated note"      # replaces previous note
+  gashub annotate stripe/api --clear             # remove note
+  gashub annotate --list                         # list all annotations
 
-Storage: ~/.chub/annotations/ (local, per-machine)
+Storage: ~/.gashub/annotations/ (local, per-machine)
 
-### chub feedback [id] [rating] [comment]
+### gashub feedback [id] [rating] [comment]
 Rate a doc or skill (up/down). Sent to the registry for maintainers.
 
 Flags:
@@ -77,16 +77,16 @@ Flags:
   --json              JSON output
 
 Examples:
-  chub feedback stripe/api up "Clear examples"
-  chub feedback openai/chat down --label outdated --label wrong-examples
+  gashub feedback stripe/api up "Clear examples"
+  gashub feedback openai/chat down --label outdated --label wrong-examples
 
-### chub update
+### gashub update
 Download or refresh the cached registry.
 
-### chub cache status|clear
+### gashub cache status|clear
 Manage the local cache. `status` shows cache info, `clear` removes cached content.
 
-### chub build <content-dir>
+### gashub build <content-dir>
 Build a registry from a local content directory.
 
 Flags:
@@ -100,18 +100,18 @@ Flags:
 Recommended pattern for AI agents using Context Hub:
 
 1. SEARCH: Find relevant documentation
-   chub search "stripe payments" --json | jq -r '.results[0].id'
+   gashub search "stripe payments" --json | jq -r '.results[0].id'
 
 2. FETCH: Get the documentation
-   chub get stripe/api --lang js
+   gashub get stripe/api --lang js
 
 3. USE: Read the content, write code based on it
 
 4. ANNOTATE: Record what you learned for future sessions
-   chub annotate stripe/api "Webhook verification requires raw body, not parsed JSON"
+   gashub annotate stripe/api "Webhook verification requires raw body, not parsed JSON"
 
 5. NEXT SESSION: Fetch again — your annotation appears automatically
-   chub get stripe/api --lang js
+   gashub get stripe/api --lang js
    # Content is followed by your previous annotation
 
 This loop means agents improve over time. Annotations persist across sessions.
@@ -129,34 +129,34 @@ Do NOT annotate information that's already clearly stated in the doc.
 ## Piping Patterns
 
 # Search, pick first result, fetch
-ID=$(chub search "stripe" --json | jq -r '.results[0].id')
-chub get "$ID" --lang js -o .context/stripe.md
+ID=$(gashub search "stripe" --json | jq -r '.results[0].id')
+gashub get "$ID" --lang js -o .context/stripe.md
 
 # Fetch multiple docs at once
-chub get openai/chat stripe/api -o .context/
+gashub get openai/chat stripe/api -o .context/
 
 # Check what additional files are available
-chub get acme/widgets --json | jq '.additionalFiles'
+gashub get acme/widgets --json | jq '.additionalFiles'
 
 # Fetch a specific reference file
-chub get acme/widgets --file references/advanced.md
+gashub get acme/widgets --file references/advanced.md
 
 # List all your annotations
-chub annotate --list --json
+gashub annotate --list --json
 
 ## Key Behaviors
 
-- Auto-detect type: `chub get` works for both docs and skills. No need to specify type.
+- Auto-detect type: `gashub get` works for both docs and skills. No need to specify type.
 - Auto-infer language: If a doc has only one language variant, --lang is not required.
 - Multi-language prompt: If a doc has multiple languages and --lang is not specified, the CLI lists available languages.
 - Incremental fetch: Default fetch returns only the entry file. A footer lists additional reference files. Use --file for selective fetch, --full for everything.
-- Annotations on fetch: If an annotation exists for an entry, it appears at the end of `chub get` output in both human and JSON modes.
-- Multi-source: Config supports multiple sources (URLs and local paths). On ID collision, prefix with source name: `chub get internal:openai/chat`.
+- Annotations on fetch: If an annotation exists for an entry, it appears at the end of `gashub get` output in both human and JSON modes.
+- Multi-source: Config supports multiple sources (URLs and local paths). On ID collision, prefix with source name: `gashub get internal:openai/chat`.
 - JSON everywhere: All commands support --json for structured output.
 
 ## Configuration
 
-File: ~/.chub/config.yaml
+File: ~/.gashub/config.yaml
 
 sources:
   - name: community

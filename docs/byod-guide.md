@@ -36,7 +36,7 @@ tags: internal, rest, api
 Build it into a registry:
 
 ```bash
-chub build my-content/ -o .chub-local/
+gashub build my-content/ -o .gashub-local/
 ```
 
 ## Add your own skills
@@ -57,22 +57,22 @@ The build picks up skills automatically — no language or version fields needed
 
 ## Point your config at it
 
-Add your local build output as a source in `~/.chub/config.yaml`:
+Add your local build output as a source in `~/.gashub/config.yaml`:
 
 ```yaml
 sources:
   - name: community
     url: https://cdn.aichub.org/v1
   - name: internal
-    path: /path/to/.chub-local
+    path: /path/to/.gashub-local
 ```
 
 Now everything works across both sources:
 
 ```bash
-chub search "api"                          # searches public + private
-chub get mycompany/internal-api             # fetches your private doc
-chub get mycompany/deploy-staging           # fetches your private skill
+gashub search "api"                          # searches public + private
+gashub get mycompany/internal-api             # fetches your private doc
+gashub get mycompany/deploy-staging           # fetches your private skill
 ```
 
 ## Enterprise use
@@ -82,8 +82,8 @@ Put your content directory in a shared git repo or internal CDN. Everyone on the
 If a private id collides with a public one, use the `source:` prefix:
 
 ```bash
-chub get internal:openai/chat           # your internal version
-chub get community:openai/chat         # the public version
+gashub get internal:openai/chat           # your internal version
+gashub get community:openai/chat         # the public version
 ```
 
 One CLI, one search, public and private content layered together.

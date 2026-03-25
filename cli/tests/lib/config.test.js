@@ -4,14 +4,14 @@ import { homedir } from 'node:os';
 import { join } from 'node:path';
 
 describe('getChubDir', () => {
-  it('returns a path ending in .chub', () => {
+  it('returns a path ending in .gashub', () => {
     const dir = getChubDir();
-    expect(dir.endsWith('.chub')).toBe(true);
+    expect(dir.endsWith('.gashub')).toBe(true);
   });
 
   it('returns a path under the user home directory', () => {
     const dir = getChubDir();
-    expect(dir).toBe(join(homedir(), '.chub'));
+    expect(dir).toBe(join(homedir(), '.gashub'));
   });
 });
 

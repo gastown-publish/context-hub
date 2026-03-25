@@ -1,4 +1,4 @@
-# Context Hub (chub) - Design Document
+# Context Hub (gashub) - Design Document
 
 ## What is Context Hub?
 
@@ -9,16 +9,16 @@ There are two kinds of content, with a fundamental distinction:
 - **Docs** ("what to know") — API/SDK reference documentation, factual knowledge that fills knowledge cutoff gaps. Large, detailed, fetched on-demand for a specific task.
 - **Skills** ("how to do it") — Behavioral instructions, coding patterns, automation playbooks. Smaller, actionable, can be installed into agent skill directories for persistent availability.
 
-Each entry also has a **source** field (`official` | `maintainer` | `community`) for trust/quality signaling. Users control which sources agents see via `~/.chub/config.yaml`.
+Each entry also has a **source** field (`official` | `maintainer` | `community`) for trust/quality signaling. Users control which sources agents see via `~/.gashub/config.yaml`.
 
 ## Architecture
 
 ```
 Content repo (source of truth)
-  ↓ chub build → registry.json + content tree
+  ↓ gashub build → registry.json + content tree
 CDN (serves registry + individual files + optional full bundle)   ← remote source
   ↓ CLI fetches from here
-~/.chub/ (local cache)                                            ← cached remote data
+~/.gashub/ (local cache)                                            ← cached remote data
   ↓ CLI reads from here
 Agent/Human (consumes docs via stdout or -o file)
   ↑ CLI also reads directly from
@@ -41,7 +41,7 @@ We initially treated all content uniformly — just tags, no rigid types. But do
 | Install target | `.context/` or any file | `.claude/skills/`, `.cursor/skills/`, etc. |
 | Language/version | Yes — per-language, per-version variants | No — skills are typically language-agnostic |
 
-This distinction drives the registry format split into `docs[]` and `skills[]`. The CLI uses a single `chub get <id>` command that auto-detects the type.
+This distinction drives the registry format split into `docs[]` and `skills[]`. The CLI uses a single `gashub get <id>` command that auto-detects the type.
 
 ### Why `docs[]` and `skills[]` in the registry (not `entries[]`)?
 The original format had a single `entries[]` array with a `provides` field to indicate doc/skill. We split it because:
@@ -49,7 +49,7 @@ The original format had a single `entries[]` array with a `provides` field to in
 1. **Different schemas**: Docs need `languages[].versions[]` nesting. Skills are flat — no language or version, just `name`, `path`, `files`.
 2. **Array membership IS the type**: No need for a `provides` field. A doc is in `docs[]`, a skill is in `skills[]`.
 3. **Bundled entries**: When a topic has both DOC.md and SKILL.md, they appear as separate items in their respective arrays. Clean separation.
-4. **CLI mapping**: `chub get` searches both arrays and auto-detects type. `chub search` searches both.
+4. **CLI mapping**: `gashub get` searches both arrays and auto-detects type. `gashub search` searches both.
 
 ### Why skills have no language or version?
 Skills are behavioral instructions ("how to integrate Stripe", "how to write Playwright login flows"). They're typically language-agnostic or written for a single context. Adding language/version nesting would add complexity without value — a skill author who needs Python and TypeScript variants can create two separate skill entries.
@@ -57,21 +57,21 @@ Skills are behavioral instructions ("how to integrate Stripe", "how to write Pla
 Docs, on the other hand, have fundamentally different content per language (Python SDK vs JavaScript SDK) and evolve with API versions.
 
 ### Why a single `get` command (not `get docs` / `get skills`)?
-We originally had `chub get docs <id>` and `chub get skills <id>` as separate subcommands. We simplified to `chub get <id>` because the CLI can auto-detect the type from the registry (docs have `languages[]`, skills don't). The user shouldn't need to know internal taxonomy to fetch content. `--lang` and `--version` flags apply when the entry is a doc and are silently ignored for skills.
+We originally had `gashub get docs <id>` and `gashub get skills <id>` as separate subcommands. We simplified to `gashub get <id>` because the CLI can auto-detect the type from the registry (docs have `languages[]`, skills don't). The user shouldn't need to know internal taxonomy to fetch content. `--lang` and `--version` flags apply when the entry is a doc and are silently ignored for skills.
 
 ### Why DOC.md and SKILL.md (not just SKILL.md)?
 We considered using SKILL.md for everything since the Agent Skills spec is the format standard. But calling a 50K API reference "SKILL.md" is semantically misleading — agents that scan for skills would load doc descriptions into their system prompt (wasting ~100 tokens per doc entry), and might "activate" a doc when the user just wants to write code.
 
 ### Why `--lang` flag instead of positional argument?
-Originally: `chub get openai-chat python`. Changed to: `chub get openai/chat-api --lang python`.
+Originally: `gashub get openai-chat python`. Changed to: `gashub get openai/chat-api --lang python`.
 
 Reasons:
-1. Multi-id support (`chub get openai/chat-api stripe/payments`) would make a positional language argument ambiguous
+1. Multi-id support (`gashub get openai/chat-api stripe/payments`) would make a positional language argument ambiguous
 2. Language can be auto-inferred when an entry has only one — the flag is only needed for disambiguation
 3. Flags are self-documenting; a bare `python` after an id is ambiguous to readers
 
 ### Why multi-id support?
-Agents often need multiple entries in one operation. Rather than looping, `chub get openai/chat-api stripe/payments` fetches both. Output is concatenated with `---` separators for stdout, or written as separate files when `-o` points to a directory.
+Agents often need multiple entries in one operation. Rather than looping, `gashub get openai/chat-api stripe/payments` fetches both. Output is concatenated with `---` separators for stdout, or written as separate files when `-o` points to a directory.
 
 ### Why one CLI, not two?
 We considered separate tools for docs and skills. Rejected because they share the same registry, config, sources, search, and cache infrastructure.
@@ -80,7 +80,7 @@ We considered separate tools for docs and skills. Rejected because they share th
 We started with 8 commands and trimmed to 5 core + 1 build: `search`, `get`, `update`, `cache`, `feedback`, and `build`. `list` and `info` were merged into `search`. `get docs` and `get skills` were merged into `get` with auto-detection.
 
 ### Why `source` field + config-level filtering?
-Each entry has `source: "official" | "maintainer" | "community"`. The human controls trust policy via `~/.chub/config.yaml`. An enterprise can restrict agents to `source: official,maintainer` without the agent needing to know about quality tiers.
+Each entry has `source: "official" | "maintainer" | "community"`. The human controls trust policy via `~/.gashub/config.yaml`. An enterprise can restrict agents to `source: official,maintainer` without the agent needing to know about quality tiers.
 
 ### Why tags instead of rigid categories?
 Rather than rigid sub-types, entries use free-form tags. This is flexible — new categories emerge without schema changes.
@@ -215,7 +215,7 @@ openai/
                 └── structured-outputs.md
 ```
 
-Both DOC.md files have `name: chat-api` (under the `openai/` author directory) — they get grouped into `id: openai/chat-api`, into one `docs[]` entry with multiple versions pointing to different paths. `recommendedVersion` is the highest semver. `chub get openai/chat-api` gets the latest; `--version 1.52.0` gets the older docs.
+Both DOC.md files have `name: chat-api` (under the `openai/` author directory) — they get grouped into `id: openai/chat-api`, into one `docs[]` entry with multiple versions pointing to different paths. `recommendedVersion` is the highest semver. `gashub get openai/chat-api` gets the latest; `--version 1.52.0` gets the older docs.
 
 ### Language-specific docs
 
@@ -232,10 +232,10 @@ stripe/
 
 Same `name: payments` under `stripe/` → both contribute to `id: stripe/payments`. Different languages, different paths, different content.
 
-### The `chub build` command
+### The `gashub build` command
 
 ```bash
-chub build <content-dir> [options]
+gashub build <content-dir> [options]
 ```
 
 Options:
@@ -285,26 +285,26 @@ Upload `dist/` to any static file host (S3, CloudFlare R2, GitHub Pages). The CL
 
 | Command | Purpose | Key Options |
 |---|---|---|
-| `chub search [query]` | Search (no query = list all, exact id = detail) | `--tags`, `--lang`, `--limit`, `--json` |
-| `chub get <ids...>` | Fetch docs or skills (auto-detects type) | `--lang`, `--version`, `--full`, `-o <path>`, `--json` |
-| `chub update` | Refresh cached registry | `--force`, `--full` |
-| `chub cache status\|clear` | Manage local cache | |
-| `chub build <content-dir>` | Build registry from content | `-o`, `--base-url`, `--validate-only`, `--json` |
+| `gashub search [query]` | Search (no query = list all, exact id = detail) | `--tags`, `--lang`, `--limit`, `--json` |
+| `gashub get <ids...>` | Fetch docs or skills (auto-detects type) | `--lang`, `--version`, `--full`, `-o <path>`, `--json` |
+| `gashub update` | Refresh cached registry | `--force`, `--full` |
+| `gashub cache status\|clear` | Manage local cache | |
+| `gashub build <content-dir>` | Build registry from content | `-o`, `--base-url`, `--validate-only`, `--json` |
 
 ### How `search` works
-- `chub search` — lists all entries (replaces `list`)
-- `chub search openai/chat-api` — exact id match shows full detail (replaces `info`)
-- `chub search "stripe"` — fuzzy search across id, name, description, tags
-- `chub search --tags browser` — filtered listing
+- `gashub search` — lists all entries (replaces `list`)
+- `gashub search openai/chat-api` — exact id match shows full detail (replaces `info`)
+- `gashub search "stripe"` — fuzzy search across id, name, description, tags
+- `gashub search --tags browser` — filtered listing
 - Results show `[doc]` or `[skill]` type labels
 
 ### How `get` works
-- `chub get openai/chat-api --lang python` — auto-detects doc, fetches DOC.md
-- `chub get openai/chat-api --full` — fetch all files in the entry
-- `chub get openai/chat-api --full -o .context/openai/` — write individual files preserving structure
-- `chub get openai/chat-api stripe/payments --lang js` — fetch multiple entries at once
-- `chub get pw-community/login-flows` — auto-detects skill, fetches SKILL.md
-- `chub get nonexistent/thing` → error: `Entry "nonexistent/thing" not found.`
+- `gashub get openai/chat-api --lang python` — auto-detects doc, fetches DOC.md
+- `gashub get openai/chat-api --full` — fetch all files in the entry
+- `gashub get openai/chat-api --full -o .context/openai/` — write individual files preserving structure
+- `gashub get openai/chat-api stripe/payments --lang js` — fetch multiple entries at once
+- `gashub get pw-community/login-flows` — auto-detects skill, fetches SKILL.md
+- `gashub get nonexistent/thing` → error: `Entry "nonexistent/thing" not found.`
 
 ### Language inference
 - Entry has one language → auto-selected, no `--lang` needed
@@ -322,26 +322,26 @@ Upload `dist/` to any static file host (S3, CloudFlare R2, GitHub Pages). The CL
 ### Agent piping patterns
 ```bash
 # Get the top search result's id
-chub search "stripe payments" --json | jq -r '.results[0].id'
+gashub search "stripe payments" --json | jq -r '.results[0].id'
 
 # Full pipeline: search → pick best → fetch → write to file
-ID=$(chub search "stripe payments" --json | jq -r '.results[0].id')
-chub get "$ID" --lang js -o .context/stripe.md
+ID=$(gashub search "stripe payments" --json | jq -r '.results[0].id')
+gashub get "$ID" --lang js -o .context/stripe.md
 
 # Fetch top 3 results
-chub search "stripe" --json | jq -r '.results[:3][].id' | xargs chub get -o .context/
+gashub search "stripe" --json | jq -r '.results[:3][].id' | xargs gashub get -o .context/
 
 # Fetch multiple at once
-chub get openai/chat-api stripe/payments -o .context/
+gashub get openai/chat-api stripe/payments -o .context/
 
 # Install a skill into Claude Code's skill directory
-chub get pw-community/login-flows -o .claude/skills/login-flows/SKILL.md
+gashub get pw-community/login-flows -o .claude/skills/login-flows/SKILL.md
 
 # Install a skill with all companion files
-chub get pw-community/login-flows --full -o .claude/skills/login-flows/
+gashub get pw-community/login-flows --full -o .claude/skills/login-flows/
 
 # Multi-source: disambiguate with source: prefix
-chub get internal:openai/chat-api
+gashub get internal:openai/chat-api
 ```
 
 ---
@@ -350,7 +350,7 @@ chub get internal:openai/chat-api
 
 ### Content format: Agent Skills compatible
 
-All content follows the [Agent Skills spec](https://agentskills.io/specification). Both DOC.md and SKILL.md use the standard's frontmatter format (`name`, `description`, optional `metadata`). This makes chub content interoperable with Claude Code, Cursor, Codex, OpenCode, and 30+ agents.
+All content follows the [Agent Skills spec](https://agentskills.io/specification). Both DOC.md and SKILL.md use the standard's frontmatter format (`name`, `description`, optional `metadata`). This makes gashub content interoperable with Claude Code, Cursor, Codex, OpenCode, and 30+ agents.
 
 ### What the CDN serves
 ```
@@ -363,15 +363,15 @@ cdn.aichub.org/v1/
 ```
 
 ### How the CLI uses it
-1. `chub update` → fetches `registry.json` only (~100KB), caches locally
-2. `chub search` → searches local registry (no network)
-3. `chub get <id>` → auto-detects type, fetches entry point (DOC.md or SKILL.md), checks cache first
-4. `chub get <id> --full` → fetches all files listed in registry
-6. `chub update --full` → downloads entire `bundle.tar.gz` for offline use
+1. `gashub update` → fetches `registry.json` only (~100KB), caches locally
+2. `gashub search` → searches local registry (no network)
+3. `gashub get <id>` → auto-detects type, fetches entry point (DOC.md or SKILL.md), checks cache first
+4. `gashub get <id> --full` → fetches all files listed in registry
+6. `gashub update --full` → downloads entire `bundle.tar.gz` for offline use
 
 ### Local cache layout
 ```
-~/.chub/
+~/.gashub/
 ├── config.yaml              # User config (optional, created manually)
 └── sources/                 # Per-source cache (remote sources only)
     ├── community/
@@ -435,7 +435,7 @@ Local path sources are **not cached** — the CLI reads directly from the config
 ```
 
 **Doc entry fields:**
-- `id` — unique identifier in `author/name` format, used by `chub get <id>`
+- `id` — unique identifier in `author/name` format, used by `gashub get <id>`
 - `name` — short name from frontmatter (the part after the author prefix)
 - `description` — short description for search results
 - `source` — `official` (library author), `maintainer` (context-hub team), `community`
@@ -450,7 +450,7 @@ Local path sources are **not cached** — the CLI reads directly from the config
 - `files` — all files in the entry directory
 - `size`, `lastUpdated` — flat, no language/version nesting
 
-### Config (`~/.chub/config.yaml`)
+### Config (`~/.gashub/config.yaml`)
 ```yaml
 # Multi-source (recommended)
 sources:
@@ -468,7 +468,7 @@ refresh_interval: 86400                       # Cache TTL in seconds (24h)
 
 **Backward compat:** If no `sources` array, falls back to single `cdn_url` field (or `CHUB_BUNDLE_URL` env var) as a source named "default".
 
-**Local source:** Can be either a raw content repo or a `chub build` output directory — both must contain `registry.json` at root with the standard schema.
+**Local source:** Can be either a raw content repo or a `gashub build` output directory — both must contain `registry.json` at root with the standard schema.
 
 ---
 
@@ -476,22 +476,22 @@ refresh_interval: 86400                       # Cache TTL in seconds (24h)
 
 Content follows the [Agent Skills open standard](https://agentskills.io/specification), supported by Claude Code, Cursor, Codex, OpenCode, and 30+ agents.
 
-### How chub relates to the Agent Skills ecosystem
+### How gashub relates to the Agent Skills ecosystem
 
-| Layer | Agent Skills spec | npx skills (Vercel) | chub |
+| Layer | Agent Skills spec | npx skills (Vercel) | gashub |
 |---|---|---|---|
 | Format | SKILL.md with frontmatter | SKILL.md | SKILL.md + DOC.md |
-| Discovery | Local filesystem scan | `npx skills search` (git repos) | `chub search` (registry index) |
+| Discovery | Local filesystem scan | `npx skills search` (git repos) | `gashub search` (registry index) |
 | Distribution | None (copy files) | Git repos | CDN + local folders |
 | Versioning | None | None | Per-entry, per-language (docs) |
 | Multi-language | None | None | Yes (docs) |
 | Trust/quality | None | None | `source` field + config filtering |
-| Build pipeline | None | None | `chub build` |
+| Build pipeline | None | None | `gashub build` |
 
 ### Why adopt the standard?
-Makes chub content interoperable with the broader agent ecosystem. A skill fetched via `chub get` can be piped directly into any agent's skill directory and discovered natively.
+Makes gashub content interoperable with the broader agent ecosystem. A skill fetched via `gashub get` can be piped directly into any agent's skill directory and discovered natively.
 
-### How chub extends it
+### How gashub extends it
 - Registry-based search and discovery over network
 - Multi-source aggregation (CDN + local folders)
 - Trust/quality filtering via `source` field
@@ -504,10 +504,10 @@ Makes chub content interoperable with the broader agent ecosystem. A skill fetch
 ## Project Structure
 
 ```
-chub-first-draft/
+gashub-first-draft/
 ├── cli/
 │   ├── package.json              # npm package with bin entry
-│   ├── bin/chub                  # #!/usr/bin/env node entry point
+│   ├── bin/gashub                  # #!/usr/bin/env node entry point
 │   ├── src/
 │   │   ├── index.js              # Commander setup, global --json, preAction cache hook
 │   │   ├── commands/
@@ -542,9 +542,9 @@ chub-first-draft/
 
 - **`skills_dir` / `docs_dir` config** — default output directories for skills and docs
 - **Agent detection** — auto-detect installed agents and write to the right skill directory
-- **`chub install`** — dedicated install command if the piping pattern proves too verbose
+- **`gashub install`** — dedicated install command if the piping pattern proves too verbose
 - **Usage telemetry** — agents report which docs/skills they used, enabling quality signals
-- **CI/CD integration** — GitHub Action that runs `chub build` and publishes to CDN on push
+- **CI/CD integration** — GitHub Action that runs `gashub build` and publishes to CDN on push
 
 ## Reference
 

@@ -10,7 +10,7 @@ A clear description of the bug.
 
 ## Steps to Reproduce
 
-1. Run `chub ...`
+1. Run `gashub ...`
 2. ...
 
 ## Expected Behavior
@@ -25,4 +25,4 @@ What actually happens.
 
 - OS: (e.g., macOS 15, Ubuntu 24.04)
 - Node.js version: (e.g., 22.0.0)
-- chub version: (run `chub --version`)
+- gashub version: (run `gashub --version`)

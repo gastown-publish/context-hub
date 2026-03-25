@@ -5,18 +5,18 @@ description: >
   before writing code that uses it — for example, "use the OpenAI API", "call the
   Stripe API", "use the Anthropic SDK", "query Pinecone", or any time the user asks
   you to write code against an external service and you need current API reference.
-  Fetch the docs with chub before answering, rather than relying on training knowledge.
+  Fetch the docs with gashub before answering, rather than relying on training knowledge.
 ---
 
-# Get API Docs via chub
+# Get API Docs via gashub
 
-When you need documentation for a library or API, fetch it with the `chub` CLI
+When you need documentation for a library or API, fetch it with the `gashub` CLI
 rather than guessing from training data. This gives you the current, correct API.
 
 ## Step 1 — Find the right doc ID
 
 ```bash
-chub search "<library name>" --json
+gashub search "<library name>" --json
 ```
 
 Pick the best-matching `id` from the results (e.g. `openai/chat`, `anthropic/sdk`,
@@ -25,7 +25,7 @@ Pick the best-matching `id` from the results (e.g. `openai/chat`, `anthropic/sdk
 ## Step 2 — Fetch the docs
 
 ```bash
-chub get <id> --lang py    # or --lang js, --lang ts
+gashub get <id> --lang py    # or --lang js, --lang ts
 ```
 
 Omit `--lang` if the doc has only one language variant — it will be auto-selected.
@@ -42,11 +42,11 @@ workaround, version quirk, or project-specific detail — save it so future sess
 start smarter:
 
 ```bash
-chub annotate <id> "Webhook verification requires raw body — do not parse before verifying"
+gashub annotate <id> "Webhook verification requires raw body — do not parse before verifying"
 ```
 
 Annotations are local, persist across sessions, and appear automatically on future
-`chub get` calls. Keep notes concise and actionable. Don't repeat what's already in
+`gashub get` calls. Keep notes concise and actionable. Don't repeat what's already in
 the doc.
 
 ## Step 5 — Give feedback
@@ -56,8 +56,8 @@ docs and prioritize improvements. Include a label and a brief comment explaining
 what was good or what needs fixing — specific feedback is the most valuable.
 
 ```bash
-chub feedback <id> up --label accurate "Clear examples, models are current"
-chub feedback <id> down --label outdated "Lists gpt-4o as latest but gpt-5.4 is out"
+gashub feedback <id> up --label accurate "Clear examples, models are current"
+gashub feedback <id> down --label outdated "Lists gpt-4o as latest but gpt-5.4 is out"
 ```
 
 Available labels: `outdated`, `inaccurate`, `incomplete`, `wrong-examples`,
@@ -71,19 +71,19 @@ or incorrect code patterns, always leave a downvote with details so it can be fi
 
 | Goal | Command |
 |------|---------|
-| List everything | `chub search` |
-| Find a doc | `chub search "stripe"` |
-| Exact id detail | `chub search stripe/api` |
-| Fetch Python docs | `chub get stripe/api --lang py` |
-| Fetch JS docs | `chub get openai/chat --lang js` |
-| Save to file | `chub get anthropic/sdk --lang py -o docs.md` |
-| Fetch multiple | `chub get openai/chat stripe/api --lang py` |
-| Save a note | `chub annotate stripe/api "needs raw body"` |
-| List notes | `chub annotate --list` |
-| Rate a doc | `chub feedback stripe/api up` |
+| List everything | `gashub search` |
+| Find a doc | `gashub search "stripe"` |
+| Exact id detail | `gashub search stripe/api` |
+| Fetch Python docs | `gashub get stripe/api --lang py` |
+| Fetch JS docs | `gashub get openai/chat --lang js` |
+| Save to file | `gashub get anthropic/sdk --lang py -o docs.md` |
+| Fetch multiple | `gashub get openai/chat stripe/api --lang py` |
+| Save a note | `gashub annotate stripe/api "needs raw body"` |
+| List notes | `gashub annotate --list` |
+| Rate a doc | `gashub feedback stripe/api up` |
 
 ## Notes
 
-- `chub search` with no query lists everything available
+- `gashub search` with no query lists everything available
 - IDs are `<author>/<name>` — confirm the ID from search before fetching
-- If multiple languages exist and you don't pass `--lang`, chub will tell you which are available
+- If multiple languages exist and you don't pass `--lang`, gashub will tell you which are available

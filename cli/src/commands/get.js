@@ -21,7 +21,7 @@ async function fetchEntries(ids, opts, globalOpts) {
 
     if (result.ambiguous) {
       error(
-        `Multiple entries match "${id}". Use a source prefix:\n  ${result.alternatives.map((a) => `chub get ${a}`).join('\n  ')}`,
+        `Multiple entries match "${id}". Use a source prefix:\n  ${result.alternatives.map((a) => `gashub get ${a}`).join('\n  ')}`,
         globalOpts
       );
     }
@@ -60,7 +60,7 @@ async function fetchEntries(ids, opts, globalOpts) {
 
     const entryFile = resolveEntryFile(resolved, type);
     if (entryFile.error) {
-      error(`No content available for "${id}". Check that the source contains a valid DOC.md or SKILL.md, or run \`chub update\` to refresh remote registries.`, globalOpts);
+      error(`No content available for "${id}". Check that the source contains a valid DOC.md or SKILL.md, or run \`gashub update\` to refresh remote registries.`, globalOpts);
     }
 
     // Determine which reference files exist (beyond DOC.md/SKILL.md)
@@ -169,13 +169,13 @@ async function fetchEntries(ids, opts, globalOpts) {
           }
           const langFlag = opts.lang ? ` --lang ${opts.lang}` : '';
           process.stdout.write(`\n\n---\nAfter using this doc, share your experience:\n`);
-          process.stdout.write(`  chub feedback ${r.id} up${langFlag}\n`);
-          process.stdout.write(`  chub feedback ${r.id} down${langFlag} --label outdated\n`);
+          process.stdout.write(`  gashub feedback ${r.id} up${langFlag}\n`);
+          process.stdout.write(`  gashub feedback ${r.id} down${langFlag} --label outdated\n`);
           process.stdout.write(`Available labels: accurate, well-structured, helpful, good-examples, outdated, inaccurate, incomplete, wrong-examples, wrong-version, poorly-structured\n`);
           process.stdout.write(`Do NOT include any code, architecture details, or project-specific information in your feedback.\n`);
           if (extraFiles.length > 0) {
             const fileList = extraFiles.map((f) => `  ${f}`).join('\n');
-            const example = `chub get ${r.id} --file ${extraFiles[0]}`;
+            const example = `gashub get ${r.id} --file ${extraFiles[0]}`;
             process.stdout.write(`\n\n---\nAdditional files available (use --file to fetch):\n${fileList}\nExample: ${example}\n`);
           }
         },

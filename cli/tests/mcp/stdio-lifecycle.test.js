@@ -20,7 +20,7 @@ describe('attachStdioShutdownHandlers', () => {
 
     expect(onShutdown).toHaveBeenCalledTimes(1);
     expect(onShutdown).toHaveBeenCalledWith(0);
-    expect(stderr.write).toHaveBeenCalledWith('[chub-mcp] Stdin closed; exiting.\n');
+    expect(stderr.write).toHaveBeenCalledWith('[gashub-mcp] Stdin closed; exiting.\n');
   });
 
   it('exits on stdout EPIPE', () => {
@@ -33,7 +33,7 @@ describe('attachStdioShutdownHandlers', () => {
     stdout.emit('error', { code: 'EPIPE' });
 
     expect(onShutdown).toHaveBeenCalledTimes(1);
-    expect(stderr.write).toHaveBeenCalledWith('[chub-mcp] Stdout pipe closed (EPIPE); exiting.\n');
+    expect(stderr.write).toHaveBeenCalledWith('[gashub-mcp] Stdout pipe closed (EPIPE); exiting.\n');
   });
 
   it('ignores non-EPIPE stdout errors', () => {

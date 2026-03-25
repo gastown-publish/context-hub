@@ -9,7 +9,7 @@ What problem does this solve?
 ## Testing
 
 - [ ] `npm test` passes
-- [ ] `chub build sample-content/ --validate-only` succeeds
+- [ ] `gashub build sample-content/ --validate-only` succeeds
 - [ ] Manual testing done (describe below)
 
 ## Notes

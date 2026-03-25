@@ -64,7 +64,7 @@ Multiplier based on who wrote the doc:
 
 ### Layer 4 (future): Agent votes
 
-Track upvote/downvote signals from agents that fetch and use docs. Store as `_voteScore` in a local file (`~/.chub/votes.json`). Applied as: `score * (1 + voteScore * 0.1)`. Not implemented in v1.
+Track upvote/downvote signals from agents that fetch and use docs. Store as `_voteScore` in a local file (`~/.gashub/votes.json`). Applied as: `score * (1 + voteScore * 0.1)`. Not implemented in v1.
 
 ### Final formula
 
@@ -95,7 +95,7 @@ All factors are transparent and documented. No opaque numbers.
 
 - `--json` output includes `_score`, `_qualityScore`, `source` for transparency
 - Human output: no change (ranked order speaks for itself)
-- `chub search <exact-id>` detail view: show quality score and source
+- `gashub search <exact-id>` detail view: show quality score and source
 
 ### 4. Update sample-registry.json
 
@@ -103,7 +103,7 @@ All factors are transparent and documented. No opaque numbers.
 
 ### 5. Rebuild test content
 
-- `chub build /tmp/chub-test-local -o /tmp/chub-build-output` — verify quality scores are computed
+- `gashub build /tmp/gashub-test-local -o /tmp/gashub-build-output` — verify quality scores are computed
 - Search for various queries and verify ranking order makes sense
 
 ## Files to modify
@@ -115,8 +115,8 @@ All factors are transparent and documented. No opaque numbers.
 
 ## Verification
 
-1. `chub build /tmp/chub-test-local -o /tmp/chub-build-output` — registry entries have `_qualityScore`
-2. `chub search "api"` — results ranked by relevance * quality * source boost
-3. `chub search "api" --json` — JSON includes `_score`, `_qualityScore`
-4. `chub search "internal-api"` — exact id match still wins
+1. `gashub build /tmp/gashub-test-local -o /tmp/gashub-build-output` — registry entries have `_qualityScore`
+2. `gashub search "api"` — results ranked by relevance * quality * source boost
+3. `gashub search "api" --json` — JSON includes `_score`, `_qualityScore`
+4. `gashub search "internal-api"` — exact id match still wins
 5. A maintainer doc with good description ranks above a community doc with vague description for the same query

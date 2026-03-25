@@ -32,7 +32,7 @@ function parseResult(result) {
   return JSON.parse(result.content[0].text);
 }
 
-describe('chub_search (handleSearch)', () => {
+describe('gashub_search (handleSearch)', () => {
   it('returns results array for a valid query', async () => {
     const result = await handleSearch({ query: 'stripe', limit: 5 });
     const data = parseResult(result);
@@ -78,7 +78,7 @@ describe('chub_search (handleSearch)', () => {
   });
 });
 
-describe('chub_get (handleGet)', () => {
+describe('gashub_get (handleGet)', () => {
   it('returns error for nonexistent entry', async () => {
     const result = await handleGet({ id: 'does-not-exist/xyz-99999' });
     expect(result.isError).toBe(true);
@@ -138,7 +138,7 @@ describe('chub_get (handleGet)', () => {
   });
 });
 
-describe('chub_list (handleList)', () => {
+describe('gashub_list (handleList)', () => {
   it('returns entries array', async () => {
     const result = await handleList({ limit: 10 });
     const data = parseResult(result);
@@ -164,7 +164,7 @@ describe('chub_list (handleList)', () => {
   });
 });
 
-describe('chub_annotate (handleAnnotate)', () => {
+describe('gashub_annotate (handleAnnotate)', () => {
   const testId = '__mcp-test-annotation__/test';
 
   it('returns no_annotation for nonexistent entry', async () => {
@@ -310,7 +310,7 @@ describe('telemetry', () => {
   });
 });
 
-describe('chub_feedback (handleFeedback)', () => {
+describe('gashub_feedback (handleFeedback)', () => {
   afterEach(() => {
     delete process.env.CHUB_FEEDBACK;
   });

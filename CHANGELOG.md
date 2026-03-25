@@ -9,7 +9,7 @@
 - NOTICE file for fork provenance
 
 ### Changed
-- Rebranded from `@aisuite/chub` to `@gastown/chub`
+- Rebranded from `@aisuite/gashub` to `@gastown/gashub`
 - All GitHub URLs point to `gastown-publish/context-hub`
 - README rewritten for Gasclaw platform context
 

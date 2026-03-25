@@ -65,7 +65,7 @@ export function registerFeedbackCommand(program) {
 
       // BUG #1 FIX: Validation errors respect --json flag
       if (!id || !rating) {
-        error('Missing required arguments: <id> and <rating>. Run: chub feedback <id> <up|down> [comment]', globalOpts);
+        error('Missing required arguments: <id> and <rating>. Run: gashub feedback <id> <up|down> [comment]', globalOpts);
       }
 
       if (rating !== 'up' && rating !== 'down') {
@@ -75,7 +75,7 @@ export function registerFeedbackCommand(program) {
       if (!isFeedbackEnabled()) {
         output(
           { status: 'skipped', reason: 'feedback_disabled' },
-          () => console.log(chalk.yellow('Feedback is disabled. Enable with: feedback: true in ~/.chub/config.yaml')),
+          () => console.log(chalk.yellow('Feedback is disabled. Enable with: feedback: true in ~/.gashub/config.yaml')),
           globalOpts
         );
         return;

@@ -1,6 +1,6 @@
 /**
  * BM25 search implementation for Context Hub.
- * Index is built at `chub build` time, scoring happens at search time.
+ * Index is built at `gashub build` time, scoring happens at search time.
  * Tokenizer is shared between build and search to ensure consistency.
  */
 
@@ -162,7 +162,7 @@ export function buildIndexFromDocuments(documents, params = getDefaultParams()) 
 
 /**
  * Build a BM25 search index from registry entries.
- * Called during `chub build`.
+ * Called during `gashub build`.
  *
  * @param {Array} entries - Combined docs and skills from registry
  * @returns {Object} The search index

@@ -7,7 +7,7 @@ Design stub for a dedicated Gasclaw container that maintains `gastown-publish/co
 The `gascontext` container runs autonomous agents that:
 
 1. Monitor upstream `andrewyng/context-hub` for updates and merge them
-2. Validate content packs with `chub build`
+2. Validate content packs with `gashub build`
 3. Smoke-test the MCP server after changes
 4. Create PRs for content additions and fixes
 5. Respond to Telegram messages in the context-hub topic
@@ -131,7 +131,7 @@ ACTIVITY_DEADLINE=3600
 Primary agent. Coordinates content updates, responds to Telegram, manages PRs.
 
 ## content-curator (📝 Content Curator)
-Validates content packs, runs chub build, checks quality, merges upstream.
+Validates content packs, runs gashub build, checks quality, merges upstream.
 
 ## mcp-tester (🔌 MCP Tester)
 Smoke-tests MCP server after changes, verifies tool responses.

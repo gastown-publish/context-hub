@@ -5,42 +5,42 @@ Curated, versioned docs and skills for AI coding agents. Agents search, fetch, a
 This repo is a fork of [andrewyng/context-hub](https://github.com/andrewyng/context-hub) (MIT license), extended with an MCP server integration and managed by the [Gasclaw platform](https://github.com/gastown-publish/gasclaw-management).
 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![npm](https://img.shields.io/npm/v/@gastown/chub)](https://www.npmjs.com/package/@gastown/chub)
+[![npm](https://img.shields.io/npm/v/@gastown/gashub)](https://www.npmjs.com/package/@gastown/gashub)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org)
 
 ## Quick Start
 
 ```bash
-npm install -g @gastown/chub
-chub search openai                 # find what's available
-chub get openai/chat --lang py     # fetch current docs (Python version)
+npm install -g @gastown/gashub
+gashub search openai                 # find what's available
+gashub get openai/chat --lang py     # fetch current docs (Python version)
 ```
 
 For the full CLI reference, see [docs/cli-reference.md](docs/cli-reference.md).
 
 ## How It Works
 
-Chub is designed for your coding agent to use. Prompt your agent: *"Use the CLI command chub to get the latest API documentation. Run `chub help` to understand how it works."* Or install the [SKILL.md](cli/skills/get-api-docs/SKILL.md) into your agent's skills directory.
+Gashub is designed for your coding agent to use. Prompt your agent: *"Use the CLI command gashub to get the latest API documentation. Run `gashub help` to understand how it works."* Or install the [SKILL.md](cli/skills/get-api-docs/SKILL.md) into your agent's skills directory.
 
 **Search, fetch, use:**
 
 ```bash
-chub search "stripe payments"        # find relevant docs
-chub get stripe/api --lang js        # fetch the doc
+gashub search "stripe payments"        # find relevant docs
+gashub get stripe/api --lang js        # fetch the doc
 # Agent reads the doc, writes correct code.
 ```
 
 **Annotate for next time:**
 
 ```bash
-chub annotate stripe/api "Needs raw body for webhook verification"
-# Next session, the annotation appears automatically on chub get.
+gashub annotate stripe/api "Needs raw body for webhook verification"
+# Next session, the annotation appears automatically on gashub get.
 ```
 
 **Feedback flows back to authors:**
 
 ```bash
-chub feedback stripe/api up          # vote docs up or down
+gashub feedback stripe/api up          # vote docs up or down
 ```
 
 ## MCP Server
@@ -48,7 +48,7 @@ chub feedback stripe/api up          # vote docs up or down
 Context Hub includes a built-in MCP (Model Context Protocol) server so agents can call `search` and `get` without shelling out to the CLI.
 
 ```bash
-chub-mcp                            # starts MCP server on stdio
+gashub-mcp                            # starts MCP server on stdio
 ```
 
 ### Cursor
@@ -59,7 +59,7 @@ Add to `.cursor/mcp.json`:
 {
   "mcpServers": {
     "context-hub": {
-      "command": "chub-mcp"
+      "command": "gashub-mcp"
     }
   }
 }
@@ -73,7 +73,7 @@ Add to `claude_desktop_config.json`:
 {
   "mcpServers": {
     "context-hub": {
-      "command": "chub-mcp"
+      "command": "gashub-mcp"
     }
   }
 }
@@ -88,7 +88,7 @@ Add to `openclaw.json` tools section:
   "tools": {
     "context-hub": {
       "type": "mcp",
-      "command": "chub-mcp"
+      "command": "gashub-mcp"
     }
   }
 }
@@ -98,16 +98,16 @@ Add to `openclaw.json` tools section:
 
 | Command | Purpose |
 |---------|---------|
-| `chub search [query]` | Search docs and skills (no query = list all) |
-| `chub get <id> [--lang py\|js]` | Fetch docs or skills by ID |
-| `chub annotate <id> <note>` | Attach a note to a doc or skill |
-| `chub annotate <id> --clear` | Remove annotations |
-| `chub annotate --list` | List all annotations |
-| `chub feedback <id> <up\|down>` | Upvote or downvote a doc |
+| `gashub search [query]` | Search docs and skills (no query = list all) |
+| `gashub get <id> [--lang py\|js]` | Fetch docs or skills by ID |
+| `gashub annotate <id> <note>` | Attach a note to a doc or skill |
+| `gashub annotate <id> --clear` | Remove annotations |
+| `gashub annotate --list` | List all annotations |
+| `gashub feedback <id> <up\|down>` | Upvote or downvote a doc |
 
 ## Tailscale / Private Registries
 
-For internal-only content, use `path:` sources in `~/.chub/config.yaml`:
+For internal-only content, use `path:` sources in `~/.gashub/config.yaml`:
 
 ```yaml
 sources:

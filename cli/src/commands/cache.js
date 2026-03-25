@@ -16,7 +16,7 @@ export function registerCacheCommand(program) {
 
       output(stats, (s) => {
         if (!s.exists || s.sources.length === 0) {
-          console.log(chalk.yellow('No cache found. Run `chub update` to initialize.'));
+          console.log(chalk.yellow('No cache found. Run `gashub update` to initialize.'));
           return;
         }
         console.log(chalk.bold('Cache Status\n'));

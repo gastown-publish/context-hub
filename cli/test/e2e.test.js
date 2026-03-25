@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { tmpdir } from 'node:os';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const CLI = join(__dirname, '..', 'bin', 'chub');
+const CLI = join(__dirname, '..', 'bin', 'gashub');
 const FIXTURES = join(__dirname, 'fixtures');
 const BUILD_OUTPUT = join(FIXTURES, 'dist');
 const CLI_TEST_TIMEOUT = 15000;
@@ -274,7 +274,7 @@ describe('chub CLI e2e', () => {
       expect(out).not.toContain('batch mode');
     });
 
-    itCli('shows annotation with chub annotate <id> (no note)', () => {
+    itCli('shows annotation with gashub annotate <id> (no note)', () => {
       const out = chub(['annotate', 'acme/widgets']);
       expect(out).toContain('use streaming instead');
     });

@@ -26,11 +26,11 @@ jobs:
 
       # Validate content first
       - name: Validate content
-        run: node cli/bin/chub build content/ --validate-only
+        run: node cli/bin/gashub build content/ --validate-only
 
       # Build registry + search index + content tree
       - name: Build content
-        run: node cli/bin/chub build content/ -o dist/ --base-url https://cdn.aichub.org/v1
+        run: node cli/bin/gashub build content/ -o dist/ --base-url https://cdn.aichub.org/v1
 
       # Sync to S3
       - name: Deploy to S3
