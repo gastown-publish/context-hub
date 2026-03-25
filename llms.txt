@@ -1,6 +1,6 @@
 # Context Hub (gashub)
 
-> CLI tool for searching and fetching LLM-optimized documentation and skills. Install: npm install -g @gastown/gashub
+> CLI tool for searching and fetching LLM-optimized documentation and skills. Install from repo: clone context-hub, cd cli, npm install && npm install -g .
 
 ## Content Types
 

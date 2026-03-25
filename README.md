@@ -5,13 +5,17 @@ Curated, versioned docs and skills for AI coding agents. Agents search, fetch, a
 This repo is a fork of [andrewyng/context-hub](https://github.com/andrewyng/context-hub) (MIT license), extended with an MCP server integration and managed by the [Gasclaw platform](https://github.com/gastown-publish/gasclaw-management).
 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![npm](https://img.shields.io/npm/v/@gastown/gashub)](https://www.npmjs.com/package/@gastown/gashub)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org)
 
 ## Quick Start
 
+Install the CLI from this repository (Node.js 18+). There is no published npm package for `@gastown/gashub` at this time.
+
 ```bash
-npm install -g @gastown/gashub
+git clone https://github.com/gastown-publish/context-hub.git
+cd context-hub/cli
+npm install
+npm install -g .
 gashub search openai                 # find what's available
 gashub get openai/chat --lang py     # fetch current docs (Python version)
 ```

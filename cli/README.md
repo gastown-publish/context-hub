@@ -4,8 +4,12 @@ Install the CLI and give your AI agent access to curated, versioned documentatio
 
 ## Install
 
+From a clone of [gastown-publish/context-hub](https://github.com/gastown-publish/context-hub) (there is no npm registry package for this fork):
+
 ```bash
-npm install -g @gastown/gashub
+cd context-hub/cli
+npm install
+npm install -g .
 ```
 
 ## Use as an Agent Skill
