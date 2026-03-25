@@ -1,6 +1,8 @@
-# Context Hub
+# Context Hub — Gasclaw Fork
 
-Coding agents hallucinate APIs and forget what they learn in a session. Context Hub gives them curated, versioned docs, plus the ability to get smarter with every task. All content is open and maintained as markdown in this repo — you can inspect exactly what your agent reads, and contribute back. 
+Curated, versioned docs and skills for AI coding agents. Agents search, fetch, annotate, and give feedback — building knowledge across sessions instead of hallucinating APIs.
+
+This repo is a fork of [andrewyng/context-hub](https://github.com/andrewyng/context-hub) (MIT license), extended with an MCP server integration and managed by the [Gasclaw platform](https://github.com/gastown-publish/gasclaw-management).
 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![npm](https://img.shields.io/npm/v/@gastown/chub)](https://www.npmjs.com/package/@gastown/chub)
@@ -11,41 +13,86 @@ Coding agents hallucinate APIs and forget what they learn in a session. Context 
 ```bash
 npm install -g @gastown/chub
 chub search openai                 # find what's available
-chub get openai/chat --lang py     # fetch current docs (Python version) 
+chub get openai/chat --lang py     # fetch current docs (Python version)
 ```
+
+For the full CLI reference, see [docs/cli-reference.md](docs/cli-reference.md).
 
 ## How It Works
 
-Chub is designed for your coding agent to use (not for you to use!). You can prompt your agent to use it (e.g., "Use the CLI command chub to get the latest API documentation for calling OpenAI. Run 'chub help' to understand how it works.") Or by creating an agent skill to use Chub using [SKILL.md](cli/skills/get-api-docs/SKILL.md), and ideally prompting your agent to remember to use this skill. (If you are using Claude Code, create the directory ~/.claude/skills/get-api-docs and put SKILL.md there.) 
+Chub is designed for your coding agent to use. Prompt your agent: *"Use the CLI command chub to get the latest API documentation. Run `chub help` to understand how it works."* Or install the [SKILL.md](cli/skills/get-api-docs/SKILL.md) into your agent's skills directory.
 
-**Most of the time, it's simple — search, fetch, use:**
+**Search, fetch, use:**
 
 ```bash
 chub search "stripe payments"        # find relevant docs
 chub get stripe/api --lang js        # fetch the doc
-# Agent reads the doc, writes correct code. Done.
+# Agent reads the doc, writes correct code.
 ```
 
-**When the agent discovers a gap**, it can annotate locally for next time:
+**Annotate for next time:**
 
 ```bash
 chub annotate stripe/api "Needs raw body for webhook verification"
-
 # Next session, the annotation appears automatically on chub get.
 ```
 
-**Feedback flows back to authors** — `chub feedback stripe/api up` or `down` — vote the docs up or down so they can get better for everyone over time.
-
-## Content Types
-
-Versioned, language-specific. "What to know."
+**Feedback flows back to authors:**
 
 ```bash
-chub get openai/chat --lang py       # Python variant
-chub get openai/chat --lang js       # JavaScript variant
+chub feedback stripe/api up          # vote docs up or down
 ```
 
-More content types than API documentation (such as agent skills) are on the roadmap. 
+## MCP Server
+
+Context Hub includes a built-in MCP (Model Context Protocol) server so agents can call `search` and `get` without shelling out to the CLI.
+
+```bash
+chub-mcp                            # starts MCP server on stdio
+```
+
+### Cursor
+
+Add to `.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "context-hub": {
+      "command": "chub-mcp"
+    }
+  }
+}
+```
+
+### Claude Desktop
+
+Add to `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "context-hub": {
+      "command": "chub-mcp"
+    }
+  }
+}
+```
+
+### OpenClaw
+
+Add to `openclaw.json` tools section:
+
+```json
+{
+  "tools": {
+    "context-hub": {
+      "type": "mcp",
+      "command": "chub-mcp"
+    }
+  }
+}
+```
 
 ## Commands
 
@@ -56,45 +103,53 @@ More content types than API documentation (such as agent skills) are on the road
 | `chub annotate <id> <note>` | Attach a note to a doc or skill |
 | `chub annotate <id> --clear` | Remove annotations |
 | `chub annotate --list` | List all annotations |
-| `chub feedback <id> <up\|down>` | Upvote or downvote a doc (sent to maintainers) |
+| `chub feedback <id> <up\|down>` | Upvote or downvote a doc |
 
-For the full list of commands, flags, and piping patterns, see the [CLI Reference](docs/cli-reference.md).
+## Tailscale / Private Registries
+
+For internal-only content, use `path:` sources in `~/.chub/config.yaml`:
+
+```yaml
+sources:
+  - type: path
+    path: /home/nic/gasclaw-workspace/context-hub/content
+  # Never commit API keys or Tailscale keys to this file
+```
+
+This avoids relying on public CDN and keeps content on your Tailscale network.
+
+## Gasclaw Platform
+
+This repo is maintained by the **Gasclaw multi-container AI agent platform** running on 8x NVIDIA H100 GPUs. The platform manages GitHub repos through Telegram bots and autonomous agents.
+
+- **Management repo**: [gastown-publish/gasclaw-management](https://github.com/gastown-publish/gasclaw-management) (`/home/nic/gasclaw-workspace/gasclaw-management`)
+- **Container**: `gascontext` (dedicated context-hub maintainer)
+- **Telegram**: Bot in the `gastown_publish` group, topic-bound
+- **Workflow**: Issues, PRs, CI, and releases run through Gasclaw agents
+
+See [docs/gasclaw.md](docs/gasclaw.md) for the full management workflow.
 
 ## Self-Improving Agents
 
-Context Hub is designed for a loop where agents get better over time.
-
-**Annotations** are local notes that agents attach to docs. They persist across sessions and appear automatically on future fetches — so agents learn from past experience. See [Feedback and Annotations](docs/feedback-and-annotations.md).
-
-**Feedback** (up/down ratings with optional labels) goes to doc authors, who update the content based on what's working and what isn't. The docs get better for everyone — not just your local annotations.
-
-```
-  Without Context Hub                          With Context Hub
-  ───────────────────                          ─────────────────
-  Search the web                               Fetch curated docs
-  Noisy results                                Higher chance of code working
-  Code breaks                                  Agent notes any gaps/workarounds
-  Effort in fixing                             ↗ Even smarter next session
-  Knowledge forgotten
-  ↻ Repeat next session
-```
-
-## Key Features
-
-### Incremental Fetch
-
-Docs can have multiple reference files beyond the main entry point. Fetch only what you need — no wasted tokens. Use `--file` to grab specific references, or `--full` for everything. See the [CLI Reference](docs/cli-reference.md).
-
-### Annotations & Feedback
-
-Annotations are local notes that agents attach to docs — they persist across sessions and appear automatically on future fetches. Feedback (up/down ratings) goes to doc authors to improve the content for everyone. See [Feedback and Annotations](docs/feedback-and-annotations.md).
+**Annotations** are local notes that persist across sessions — agents learn from past experience. **Feedback** (up/down ratings) goes to doc authors to improve content for everyone. See [Feedback and Annotations](docs/feedback-and-annotations.md).
 
 ## Contributing
 
-Anyone can contribute docs and skills — API providers, framework authors, and the community. Content is plain markdown with YAML frontmatter, submitted as pull requests. See the [Content Guide](docs/content-guide.md) for the format and structure.
+Anyone can contribute docs and skills — API providers, framework authors, and the community. Content is plain markdown with YAML frontmatter, submitted as pull requests. See the [Content Guide](docs/content-guide.md).
 
-Agent feedback (up/down ratings from real usage) flows back to authors, helping surface what needs fixing and improving overall quality over time.
+For Gasclaw-managed contributions, see [docs/gasclaw.md](docs/gasclaw.md).
+
+## Fork Relationship
+
+This repo is a fork of [andrewyng/context-hub](https://github.com/andrewyng/context-hub). We extend it with:
+
+- MCP server documentation for Gasclaw integration
+- Gasclaw platform management workflow
+- Dedicated container design for automated content maintenance
+- Internal registry and Tailscale-only deployment patterns
+
+Upstream changes can be pulled via `git fetch upstream && git merge upstream/main`.
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE) — see [NOTICE](NOTICE) for fork attribution.
