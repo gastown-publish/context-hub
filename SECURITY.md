@@ -2,7 +2,7 @@
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability, please report it by [opening a GitHub issue](https://github.com/andrewyng/context-hub/issues/new) with the label `security`.
+If you discover a security vulnerability, please report it by [opening a GitHub issue](https://github.com/gastown-publish/context-hub/issues/new) with the label `security`.
 
 Include:
 
@@ -21,7 +21,7 @@ We will respond promptly and aim to provide a fix within 7 days for critical iss
 
 ## Scope
 
-This policy covers the `@aisuite/chub` CLI package and the Context Hub API at `api.aichub.org`.
+This policy covers the `@gastown/chub` CLI package and the Context Hub API at `api.aichub.org`.
 
 ## Telemetry & Privacy
 

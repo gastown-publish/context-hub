@@ -28,7 +28,7 @@ By using chub, you agree to the Terms of Service at ${chalk.underline('https://w
 
 Chub asks agents to provide feedback on documentation, and this feedback is used to improve docs for the developer \
 community. If you wish to disable this feedback, add ${chalk.bold('"feedback: false"')} to ${chalk.bold(configPath)}. See \
-${chalk.underline('https://github.com/andrewyng/context-hub')} for details.
+${chalk.underline('https://github.com/gastown-publish/context-hub')} for details.
 `);
 
   try {

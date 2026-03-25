@@ -1,6 +1,6 @@
 # Context Hub (chub)
 
-> CLI tool for searching and fetching LLM-optimized documentation and skills. Install: npm install -g @aisuite/chub
+> CLI tool for searching and fetching LLM-optimized documentation and skills. Install: npm install -g @gastown/chub
 
 ## Content Types
 

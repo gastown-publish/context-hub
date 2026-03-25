@@ -42,7 +42,7 @@ an individual is officially representing the community in public spaces.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported by [opening a GitHub issue](https://github.com/andrewyng/context-hub/issues/new).
+reported by [opening a GitHub issue](https://github.com/gastown-publish/context-hub/issues/new).
 
 All complaints will be reviewed and investigated promptly and fairly.
 

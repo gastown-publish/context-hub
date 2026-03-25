@@ -12,7 +12,7 @@ Thank you for your interest in contributing to Context Hub! This guide covers bo
 ### Getting Started
 
 ```bash
-git clone https://github.com/andrewyng/context-hub.git
+git clone https://github.com/gastown-publish/context-hub.git
 cd context-hub
 npm install
 ```
@@ -118,8 +118,8 @@ metadata:
 
 ## Reporting Issues
 
-- **Bugs**: Use the [bug report template](https://github.com/andrewyng/context-hub/issues/new?template=bug_report.md)
-- **Features**: Use the [feature request template](https://github.com/andrewyng/context-hub/issues/new?template=feature_request.md)
+- **Bugs**: Use the [bug report template](https://github.com/gastown-publish/context-hub/issues/new?template=bug_report.md)
+- **Features**: Use the [feature request template](https://github.com/gastown-publish/context-hub/issues/new?template=feature_request.md)
 - **Security**: See [SECURITY.md](SECURITY.md)
 
 ## License

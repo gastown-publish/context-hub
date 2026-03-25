@@ -5,7 +5,7 @@ Install the CLI and give your AI agent access to curated, versioned documentatio
 ## Install
 
 ```bash
-npm install -g @aisuite/chub
+npm install -g @gastown/chub
 ```
 
 ## Use as an Agent Skill
@@ -18,14 +18,14 @@ Copy the skill into your project:
 
 ```bash
 mkdir -p .claude/skills
-cp $(npm root -g)/@aisuite/chub/skills/get-api-docs/SKILL.md .claude/skills/get-api-docs.md
+cp $(npm root -g)/@gastown/chub/skills/get-api-docs/SKILL.md .claude/skills/get-api-docs.md
 ```
 
 Or install it globally (applies to all projects):
 
 ```bash
 mkdir -p ~/.claude/skills
-cp $(npm root -g)/@aisuite/chub/skills/get-api-docs/SKILL.md ~/.claude/skills/get-api-docs.md
+cp $(npm root -g)/@gastown/chub/skills/get-api-docs/SKILL.md ~/.claude/skills/get-api-docs.md
 ```
 
 ### Cursor
@@ -34,7 +34,7 @@ Copy the skill into your project's rules directory:
 
 ```bash
 mkdir -p .cursor/rules
-cp $(npm root -g)/@aisuite/chub/skills/get-api-docs/SKILL.md .cursor/rules/get-api-docs.md
+cp $(npm root -g)/@gastown/chub/skills/get-api-docs/SKILL.md .cursor/rules/get-api-docs.md
 ```
 
 ### Other Agent Tools

@@ -3,13 +3,13 @@
 Coding agents hallucinate APIs and forget what they learn in a session. Context Hub gives them curated, versioned docs, plus the ability to get smarter with every task. All content is open and maintained as markdown in this repo — you can inspect exactly what your agent reads, and contribute back. 
 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![npm](https://img.shields.io/npm/v/@aisuite/chub)](https://www.npmjs.com/package/@aisuite/chub)
+[![npm](https://img.shields.io/npm/v/@gastown/chub)](https://www.npmjs.com/package/@gastown/chub)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org)
 
 ## Quick Start
 
 ```bash
-npm install -g @aisuite/chub
+npm install -g @gastown/chub
 chub search openai                 # find what's available
 chub get openai/chat --lang py     # fetch current docs (Python version) 
 ```
