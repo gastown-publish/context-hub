@@ -127,7 +127,7 @@ This avoids relying on public CDN and keeps content on your Tailscale network.
 This repo is maintained by the **Gasclaw multi-container AI agent platform** running on 8x NVIDIA H100 GPUs. The platform manages GitHub repos through Telegram bots and autonomous agents.
 
 - **Management repo**: [gastown-publish/gasclaw-management](https://github.com/gastown-publish/gasclaw-management) (`/home/nic/gasclaw-workspace/gasclaw-management`)
-- **Container**: `gascontext` (dedicated context-hub maintainer)
+- **Container**: `gasclaw-context` (dedicated context-hub maintainer; `docker ps --filter name=gasclaw-`)
 - **Telegram**: Bot in the `gastown_publish` group, topic-bound
 - **Workflow**: Issues, PRs, CI, and releases run through Gasclaw agents
 

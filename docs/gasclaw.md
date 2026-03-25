@@ -4,11 +4,11 @@ This repo (`gastown-publish/context-hub`) is maintained by the **Gasclaw platfor
 
 ## Container Assignment
 
-This repo is managed by the **`gascontext`** container (or `gasclaw-mgmt` as a secondary workspace). The dedicated container runs an OpenClaw gateway with agents specialized for content curation and MCP server maintenance.
+This repo is managed by the **`gasclaw-context`** container (or `gasclaw-mgmt` as a secondary workspace). The dedicated container runs an OpenClaw gateway with agents specialized for content curation and MCP server maintenance.
 
 | What | Value |
 |------|-------|
-| Container name | `gascontext` |
+| Container name | `gasclaw-context` |
 | Gateway port | 18797 |
 | Telegram bot | TBD (to be registered) |
 | Telegram topic | TBD (in group `-1003810709807`) |

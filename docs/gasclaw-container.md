@@ -1,10 +1,10 @@
-# Gasclaw Container: gascontext
+# Gasclaw Container: gasclaw-context
 
 Design stub for a dedicated Gasclaw container that maintains `gastown-publish/context-hub`.
 
 ## Purpose
 
-The `gascontext` container runs autonomous agents that:
+The `gasclaw-context` container (Unix host user `gascontext`; filter: `docker ps --filter name=gasclaw-`) runs autonomous agents that:
 
 1. Monitor upstream `andrewyng/context-hub` for updates and merge them
 2. Validate content packs with `gashub build`
@@ -16,7 +16,7 @@ The `gascontext` container runs autonomous agents that:
 
 | Setting | Value |
 |---------|-------|
-| Container name | `gascontext` |
+| Container name | `gasclaw-context` |
 | Image | `gasclaw` (shared base image) |
 | Gateway port | 18797 |
 | Telegram bot | `@gascontext_bot` (to be registered) |
@@ -27,13 +27,14 @@ The `gascontext` container runs autonomous agents that:
 ## docker-compose Snippet
 
 ```yaml
+name: gasclaw-context
 services:
-  gascontext:
+  gasclaw:
     build:
       context: /home/nic/gasclaw-workspace/gasclaw
       platforms:
         - linux/amd64
-    container_name: gascontext
+    container_name: gasclaw-context
     ports:
       - "18797:18797"
     volumes:
