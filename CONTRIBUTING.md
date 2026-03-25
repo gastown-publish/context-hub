@@ -122,6 +122,18 @@ metadata:
 - **Features**: Use the [feature request template](https://github.com/gastown-publish/context-hub/issues/new?template=feature_request.md)
 - **Security**: See [SECURITY.md](SECURITY.md)
 
+## Gasclaw-Managed Contributions
+
+This repo is maintained by the [Gasclaw platform](https://github.com/gastown-publish/gasclaw-management). For day-to-day work (issues, PRs, CI, content validation), Gasclaw agents handle most operations through Telegram and automated workflows.
+
+To contribute through Gasclaw:
+1. File an issue or message the bot in the context-hub Telegram topic
+2. Agents will create a branch, implement changes, and open a PR
+3. CI must pass before merge (`gh pr checks`)
+4. Beads tracks work items across the platform
+
+See [docs/gasclaw.md](docs/gasclaw.md) for the full workflow.
+
 ## License
 
 By contributing, you agree that your contributions will be licensed under the [MIT License](LICENSE).
